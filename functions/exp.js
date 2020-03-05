@@ -139,7 +139,7 @@ function showExp(msg, bot, db) {
 	let User = db.model('User', userSchema)
 	User.findOne({userId: target.id}, (err,doc)=>{
 		if (err) util.debugSend(`Find Users error: ${err}`, msg.channel)
-		else msg.channel.send(`${target} 有 ${doc?doc.exp:0} 經驗值。`)
+		else msg.channel.send(`${target} 目前 ${level(doc.exp)} 等，有 ${doc?doc.exp:0} 經驗值。`)
 	})
 }
 
