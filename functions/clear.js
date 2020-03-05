@@ -30,7 +30,7 @@ module.exports = function(bot) {
 		if (msg.author.bot) return
 		// clear, only for debug channel
 		if (util.is(msg.channel.id, [config.dbgChannel])) {
-			if (msg.content === '!clear') clear(msg, bot)
+			if (msg.content === 'clear') clear(msg, bot)
 		}
 	})
 }

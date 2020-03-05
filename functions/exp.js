@@ -4,6 +4,23 @@ const config = require('../config.js')
 const userSchema = require('../schemas/user.js')
 const channelSchema = require('../schemas/channel.js')
 
+function level(exp) {
+	if (exp < 20000)
+		return Math.max(0, Math.floor(exp/2000))
+	else if (exp < 6000000) {
+		let expNeed = 20000
+		for (let lv=11; lv<=100; lv++) {
+			expNeed += Math.round(990 * Math.pow((lv-10)/91.84,2) + 10) * 200
+			if (exp < expNeed) return lv-1
+		}
+	} else return Math.floor((exp-6000000)/200000) + 100
+}
+
+function checkLevelup(msg, bot, user, a, b) {
+	if(level(b) > level(a))
+		msg.channel.send(`恭喜 ${user} 升級到 ${level(b)} 等！`)
+}
+
 function addExp(msg, bot, db) {
 	let Channel = db.model('Channel', channelSchema)
 	Channel.findOne({channelId: msg.channel.id}, (err,doc)=>{
@@ -17,6 +34,7 @@ function addExp(msg, bot, db) {
 				if (err) util.debugSend(`Update Users error: ${err}`, bot.channels.get(config.dbgChannel))
 				else if (msg.channel.id === config.dbgChannel)
 					msg.channel.send(`${msg.author} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
+				checkLevelup(msg, bot, msg.author, doc.exp-incr, doc.exp)
 			})
 		}
 	})
@@ -25,8 +43,8 @@ function addExp(msg, bot, db) {
 function addExpTo(msg, bot, db) {
 	let words = msg.content.split(' ')
 	var incr = Number(words[2])
-	if (!msg.mentions.members.size || !(incr > 0)) {
-		msg.channel.send(`Invalid arguments. Usage: \`!exp add [EXP] [member]\` where EXP is a positive integer.`)
+	if (!msg.mentions.members.size) {
+		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
 	} else msg.mentions.members.tap(member=>{
 		if (member.user.bot) util.debugSend(`不能對機器人 (${member}) 增加經驗值。`, msg.channel)
 		else {
@@ -35,6 +53,7 @@ function addExpTo(msg, bot, db) {
 				{upsert: true, new: true}, (err,doc)=>{
 				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
 				else util.debugSend(`${member} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`, msg.channel)
+				checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
 			})
 		}
 	})
@@ -44,7 +63,7 @@ function setChannelExp(msg, bot, db) {
 	var words = msg.content.split(' ')
 	var r = Number(words[2])
 	if (!msg.mentions.channels.size || !(r>=0 && r<1000)) {
-		msg.channel.send(`Invalid arguments. Usage: \`!exp setRatio [ratio] [channels]\` where ratio is a non negative integer less than 1000`)
+		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp setRatio [ratio] [channels]\` where ratio is a non negative integer less than 1000`)
 	} else msg.mentions.channels.tap(ch => {
 		let Channel = db.model('Channel', channelSchema)
 		Channel.findOneAndUpdate({channelId: ch.id}, {expRatio: r},
@@ -70,9 +89,10 @@ function listChannelExp(msg, bot, db) {
 }
 
 function initExp(msg, bot, db) {
+	msg.channel.send(`Warning : Use this only once, unless you have reset EXP.`)
+
 	var incr = config.fanRoleExp
 	let role = bot.guilds.get(config.guildId).roles.get(config.fanRole)
-	msg.channel.send(`Warning : Use this only once, unless you have reset EXP.`)
 	msg.channel.send(`Adding ${incr} EXP to all ${role.name}. Check console for details and errors.`)
 	role.members.tap(member=>{
 		if (member.user.bot) return
@@ -82,6 +102,35 @@ function initExp(msg, bot, db) {
 			if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
 			else console.log(`> ${member.user.tag} + ${incr} EXP => ${doc.exp} EXP.`)
 		})
+	})
+
+	var incr2 = 2000
+	let role2 = bot.guilds.get(config.guildId).roles.get('684789134832697347')
+	msg.channel.send(`Adding ${incr2} EXP to all ${role2.name}. Check console for details and errors.`)
+	role2.members.tap(member=>{
+		if (member.user.bot) return
+		let User = db.model('User', userSchema)
+		User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr2}},
+			{upsert: true, new: true}, (err,doc)=>{
+			if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+			else console.log(`> ${member.user.tag} + ${incr2} EXP => ${doc.exp} EXP.`)
+		})
+	})
+
+	let User = db.model('User', userSchema)
+	User.findOneAndUpdate({userId: '600227019929813004'}, {$inc: {exp: 10000}},
+		{upsert: true, new: true}, (err,doc)=>{
+		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+		else console.log(`> 600227019929813004 + ${10000} EXP => ${doc.exp} EXP.`)
+	})
+}
+
+function initReset(msg, bot, db) {
+	let role = bot.guilds.get(config.guildId).roles.get(config.fanRole)
+	let User = db.model('User', userSchema)
+	User.collection.drop((err,res)=>{
+		if (err) util.debugSend(`Drop Users error: ${err}`, msg.channel)
+		else util.debugSend(`Exp reset.`, msg.channel)
 	})
 }
 
@@ -120,6 +169,7 @@ function showTop(msg, bot, db) {
 				sliced.forEach(async(e,i,a)=>{
 					let member = guild.members.get(e.userId)
 					let substr = `${e.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}**${e.rank}** \\\| `
+					substr += `**LV ${level(e.exp)}** | `
 					if (member)
 						substr += `**${member.user.tag}**${member.nickname ? ` aka **${member.nickname}**` : ''}`
 					else {
@@ -144,32 +194,37 @@ module.exports = function(bot, db) {
 		if (util.is(msg.channel.type, ['text'])) addExp(msg, bot, db)
 
 		// set channel exp ratio
-		if (util.cmd(msg, '!exp setRatio'))
+		if (util.cmd(msg, 'exp setRatio'))
 			if (util.checkAdmin(msg) && util.checkChannel(msg))
 				setChannelExp(msg, bot, db)
 
 		// list exp ratio
-		if (util.cmd(msg, '!exp showRatio'))
+		if (util.cmd(msg, 'exp showRatio'))
 			if (util.checkChannel(msg))
 				listChannelExp(msg, bot, db)
 
 		// init exp
-		if (util.cmd(msg, '!exp init'))
+		if (util.cmd(msg, 'exp init'))
 			if (util.checkAdmin(msg) && util.checkChannel(msg))
 				initExp(msg, bot, db)
 
+		// reset exp
+		if (util.cmd(msg, 'exp reset'))
+			if (util.checkAdmin(msg) && util.checkChannel(msg))
+				initReset(msg, bot, db)
+
 		// add exp manual
-		if (util.cmd(msg, '!exp add'))
+		if (util.cmd(msg, 'exp add'))
 			if (util.checkAdmin(msg) && util.checkChannel(msg))
 				addExpTo(msg, bot, db)
 
 		// show exp
-		if (util.cmd(msg, '!exp show'))
+		if (util.cmd(msg, 'exp show'))
 			if (util.checkChannel(msg))
 				showExp(msg, bot, db)
 
 		// show top users
-		if (util.cmd(msg, '!exp top'))
+		if (util.cmd(msg, 'exp top'))
 			if (util.checkChannel(msg))
 				showTop(msg, bot, db)
 	})

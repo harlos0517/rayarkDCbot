@@ -20,9 +20,11 @@ module.exports = {
 		return arr[i]
 	},
 	cmd: function(msg, cmd) {
-		return (msg.content === cmd) ||
-		       (msg.content.slice(0, cmd.length+1) === (cmd+' ' )) ||
-		       (msg.content.slice(0, cmd.length+1) === (cmd+'\n'))
+		let cmd2 = config.prefix+cmd+' '
+		let cmd3 = config.prefix+cmd+'\n'
+		return (msg.content === config.prefix+cmd) ||
+		       (msg.content.slice(0, cmd2.length) === cmd2) ||
+		       (msg.content.slice(0, cmd3.length) === cmd3)
 	},
 	debugSend: function(err, ch) {
 		if (ch) ch.send(err)

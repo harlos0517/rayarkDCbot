@@ -5,7 +5,7 @@ const userSchema = require('../schemas/user.js')
 
 function allow(msg, bot, db) {
 	if (!msg.mentions.members.size) {
-		msg.channel.send(`Invalid arguments. Usage: \`!allow [member]\``)
+		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}allow [member]\``)
 	} else msg.mentions.members.tap(member=>{
 		if (member.user.bot) msg.channel.send(`不能接受機器人 (${member}) 。`, msg.channel)
 		else if (member.roles.has(config.fanRole))
@@ -27,7 +27,7 @@ function allow(msg, bot, db) {
 
 module.exports = function(bot, db) {
 	bot.on('message', msg => {
-		if (util.cmd(msg, '!allow'))
+		if (util.cmd(msg, 'allow'))
 			if (util.checkAdmin(msg) && util.checkChannel(msg))
 				allow(msg, bot, db)
 	})
