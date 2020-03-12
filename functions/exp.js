@@ -32,9 +32,11 @@ function addExp(msg, bot, db) {
 			User.findOneAndUpdate({userId: msg.author.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
 				if (err) util.debugSend(`Update Users error: ${err}`, bot.channels.get(config.dbgChannel))
-				else if (msg.channel.id === config.dbgChannel)
-					msg.channel.send(`${msg.author} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
-				checkLevelup(msg, bot, msg.author, doc.exp-incr, doc.exp)
+				else {
+					if (msg.channel.id === config.dbgChannel)
+						msg.channel.send(`${msg.author} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
+					checkLevelup(msg, bot, msg.author, doc.exp-incr, doc.exp)
+				}
 			})
 		}
 	})
@@ -43,7 +45,7 @@ function addExp(msg, bot, db) {
 function addExpTo(msg, bot, db) {
 	let words = msg.content.split(' ')
 	var incr = Number(words[2])
-	if (!msg.mentions.members.size) {
+	if (!msg.mentions.members.size || !(incr > 0)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
 	} else msg.mentions.members.tap(member=>{
 		if (member.user.bot) util.debugSend(`不能對機器人 (${member}) 增加經驗值。`, msg.channel)
@@ -52,8 +54,10 @@ function addExpTo(msg, bot, db) {
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
 				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
-				else util.debugSend(`${member} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`, msg.channel)
-				checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
+				else {
+					util.debugSend(`${member} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`, msg.channel)
+					checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
+				}
 			})
 		}
 	})
@@ -187,45 +191,47 @@ function showTop(msg, bot, db) {
 
 module.exports = function(bot, db) {
 	bot.on('message', msg => {
-		// Ignore bot messages and non-guild messages.
-		if (!util.checkMember(msg)) return
+		util.tryCatch(()=>{
+			// Ignore bot messages and non-guild messages.
+			if (!util.checkMember(msg)) return
 
-		// add exp auto
-		if (util.is(msg.channel.type, ['text'])) addExp(msg, bot, db)
+			// add exp auto
+			if (util.is(msg.channel.type, ['text'])) addExp(msg, bot, db)
 
-		// set channel exp ratio
-		if (util.cmd(msg, 'exp setRatio'))
-			if (util.checkAdmin(msg) && util.checkChannel(msg))
-				setChannelExp(msg, bot, db)
+			// set channel exp ratio
+			if (util.cmd(msg, 'exp setRatio'))
+				if (util.checkAdmin(msg) && util.checkChannel(msg))
+					setChannelExp(msg, bot, db)
 
-		// list exp ratio
-		if (util.cmd(msg, 'exp showRatio'))
-			if (util.checkChannel(msg))
-				listChannelExp(msg, bot, db)
+			// list exp ratio
+			if (util.cmd(msg, 'exp showRatio'))
+				if (util.checkChannel(msg))
+					listChannelExp(msg, bot, db)
 
-		// init exp
-		if (util.cmd(msg, 'exp init'))
-			if (util.checkAdmin(msg) && util.checkChannel(msg))
-				initExp(msg, bot, db)
+			// init exp
+			if (util.cmd(msg, 'exp init'))
+				if (util.checkAdmin(msg) && util.checkChannel(msg))
+					initExp(msg, bot, db)
 
-		// reset exp
-		if (util.cmd(msg, 'exp reset'))
-			if (util.checkAdmin(msg) && util.checkChannel(msg))
-				initReset(msg, bot, db)
+			// reset exp
+			if (util.cmd(msg, 'exp reset'))
+				if (util.checkAdmin(msg) && util.checkChannel(msg))
+					initReset(msg, bot, db)
 
-		// add exp manual
-		if (util.cmd(msg, 'exp add'))
-			if (util.checkAdmin(msg) && util.checkChannel(msg))
-				addExpTo(msg, bot, db)
+			// add exp manual
+			if (util.cmd(msg, 'exp add'))
+				if (util.checkAdmin(msg) && util.checkChannel(msg))
+					addExpTo(msg, bot, db)
 
-		// show exp
-		if (util.cmd(msg, 'exp show'))
-			if (util.checkChannel(msg))
-				showExp(msg, bot, db)
+			// show exp
+			if (util.cmd(msg, 'exp show'))
+				if (util.checkChannel(msg))
+					showExp(msg, bot, db)
 
-		// show top users
-		if (util.cmd(msg, 'exp top'))
-			if (util.checkChannel(msg))
-				showTop(msg, bot, db)
+			// show top users
+			if (util.cmd(msg, 'exp top'))
+				if (util.checkChannel(msg))
+					showTop(msg, bot, db)
+		}, bot)
 	})
 }

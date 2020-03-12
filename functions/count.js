@@ -26,10 +26,12 @@ function count(ch) {
 
 module.exports = function(bot) {
 	bot.on('message', msg => {
-		// Ignore bot messages.
-		if (msg.author.bot) return
-		if (util.cmd(msg, 'count'))
-			if (util.checkChannel(msg))
-				count(msg.channel)
+		util.tryCatch(()=>{
+			// Ignore bot messages.
+			if (msg.author.bot) return
+			if (util.cmd(msg, 'count'))
+				if (util.checkChannel(msg))
+					count(msg.channel)
+		}, bot)
 	})
 }

@@ -28,7 +28,17 @@ module.exports = {
 	},
 	debugSend: function(err, ch) {
 		if (ch) ch.send(err)
-		else console.log(err)
+		console.log(err)
+	},
+	tryCatch: function(func, bot) {
+		try {
+			func()
+		} catch (err) {
+			let errorMsg = `[ ERROR ] ${err.name}: ${err.message}`
+			console.log(errorMsg)
+			if (bot && bot.channels && bot.channels.get && bot.channels.get(config.dbgChannel))
+			bot.channels.get(config.dbgChannel).send(errorMsg)
+		}
 	},
 	checkAdmin: function(msg) {
 		if (!msg.member.roles.has(config.adminRole)) {
