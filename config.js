@@ -17,5 +17,5 @@ module.exports = {
 	generalChannel: generalChannel,
 	adminRole: adminRole,
 	fanRole: fanRole,
-	fanRoleExp: 6000
+	fanRoleExp: 20000
 }
