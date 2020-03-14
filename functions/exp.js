@@ -208,6 +208,7 @@ function showExp(msg, bot, db) {
 				}
 			})
 			let doc = docs.find(e=>e.userId === target.id)
+			doc = doc || {exp: 0, rank: docs.length + 1}
 			let str = `${target}\n`
 			str += `[ **LV ${level(doc.exp)}** ]     `
 			str += `**RANK ${doc.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}${doc.rank}**     `
