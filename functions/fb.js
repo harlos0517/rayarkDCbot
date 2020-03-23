@@ -23,7 +23,7 @@ function fetchPage(fanpage, bot) {
 				bot.channels.get(fanpage.channel)
 					.send(`${bot.guilds.get(config.guildId).roles.get(fanpage.pinRole)}\n${link}\n${preview}`)
 			fanpage.cur = link
-		})
+		}, bot)
 	})
 }
 

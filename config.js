@@ -58,5 +58,46 @@ module.exports = {
 		id: 'RayarkConcept',
 		channel: '691533621483274260',
 		pinRole: '691534019631775785'
+	}],
+	iamRoles: [{
+		name: 'Rayark',
+		abbr: 'rayark',
+		role: '691530850570993664'
+	},{
+		name: 'Mandora',
+		abbr: 'mandora',
+		role: '691530836364754994'
+	},{
+		name: 'Cytus',
+		abbr: 'cytus',
+		role: '691527455986548768'
+	},{
+		name: 'Deemo',
+		abbr: 'deemo',
+		role: '691530842388037652'
+	},{
+		name: 'Voez',
+		abbr: 'voez',
+		role: '691530846049665074'
+	},{
+		name: 'Sdorica',
+		abbr: 'sdorica',
+		role: '691530847479660545'
+	},{
+		name: 'MO Astray',
+		abbr: 'mo',
+		role: '691530848360464414'
+	},{
+		name: 'Implosion',
+		abbr: 'implosion',
+		role: '691530848977158194'
+	},{
+		name: 'Soul of Eden',
+		abbr: 'soe',
+		role: '691530849765818398'
+	},{
+		name: 'Rayark Concept',
+		abbr: 'concept',
+		role: '691534019631775785'
 	}]
 }

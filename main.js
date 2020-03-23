@@ -27,6 +27,7 @@ require('./functions/allow.js')(bot, mongoose)
 require('./functions/count.js')(bot)
 require('./functions/clear.js')(bot)
 require('./functions/exp.js')(bot, mongoose)
+require('./functions/iam.js')(bot)
 require('./functions/fb.js')(bot)
 
 // login
