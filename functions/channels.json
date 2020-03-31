@@ -1,0 +1,541 @@
+[
+{
+	"id": "674894964135559178",
+	"type": "category",
+	"name": "佈告欄 BULLETIN BOARD",
+	"channels": [
+	{
+		"id": "674897049006899200",
+		"type": "text",
+		"name": "置頂-readme",
+		"topic":
+		{
+			"ZH": "留言規範、邀請連結",
+			"EN": "Rules, invite link",
+			"JP": "メッセージルール、招待リンク"
+		}
+	},
+	{
+		"id": "693829643295260705",
+		"type": "text",
+		"name": "頻道導覽-channel_guide",
+		"topic":
+		{
+			"ZH": "顯示所有頻道",
+			"EN": "Displays all channels",
+			"JP": "すべてのチャンネルを表示"
+		}
+	},
+	{
+		"id": "674895088664444938",
+		"type": "text",
+		"name": "公告-announcement",
+		"topic":
+		{
+			"ZH": "伺服器公告",
+			"EN": "Server announcements",
+			"JP": "サーバーのお知らせ"
+		}
+	},
+	{
+		"id": "675021896927936522",
+		"type": "text",
+		"name": "歡迎-welcome",
+		"topic":
+		{
+			"ZH": "新人加入的歡迎訊息",
+			"EN": "Welcome Messages",
+			"JP": "新人歓迎メッセージ"
+		}
+	},
+	{
+		"id": "674894609377132545",
+		"type": "text",
+		"name": "宣傳-advertising",
+		"topic":
+		{
+			"ZH": "個人或他人推廣宣傳",
+			"EN": "Advertise yourself or others",
+			"JP": "プロモーション！"
+		},
+		"warning":
+		{
+			"ZH": "請勿在他處進行宣傳！",
+			"EN": "DO NOT advertise anywhere else!",
+			"JP": "他の場所では宣伝しないでください！"
+		}
+	},
+	{
+		"id": "676071912719384577",
+		"type": "text",
+		"name": "自我介紹-self_intro",
+		"topic":
+		{
+			"ZH": "自我介紹可以拿到 \\@ 雷亞粉絲 身分組權限和經驗值獎勵",
+			"EN": "Introduce yourself here to get \\@ RayarkFans role permission and XP reward!",
+			"JP": "自己紹介を完了し、\\@ レイアークファン の管理権限と経験値を得ることができます"
+		}
+	},
+	{
+		"id": "677869926526091274",
+		"type": "text",
+		"name": "貼圖大全-emojis",
+		"topic":
+		{
+			"ZH": "顯示所有伺服器自訂貼圖",
+			"EN": "Displays all server emojis",
+			"JP": "レアビレッジ(Rayark Village)の絵文字をすべて表示"
+		}
+	},
+	{
+		"id": "693746200872091649",
+		"type": "text",
+		"name": "合作宣傳-coop_promote",
+		"topic":
+		{
+			"ZH": "與其他社群合作互相宣傳",
+			"EN": "Advertising cooperation with other communities",
+			"JP": "他のコミュニティを宣伝する"
+		}
+	}]
+},
+{
+	"id": "674894652771663912",
+	"type": "category",
+	"name": "中文大廳",
+	"descrp":
+	{
+		"ZH": "中文",
+		"EN": "Chinese",
+		"JP": "中国語"
+	},
+	"channels": [
+	{
+		"id": "674897826588786695",
+		"type": "text",
+		"name": "雷亞-rayark",
+		"topic":
+		{
+			"ZH": "雷亞相關綜合討論、貼文搬運"
+		}
+	},
+	{
+		"id": "658648174784937988",
+		"type": "text",
+		"name": "一般-general",
+		"topic":
+		{
+			"ZH": "任何閒聊"
+		}
+	},
+	{
+		"id": "658648174784937989",
+		"type": "voice",
+		"name": "一般-general",
+		"topic":
+		{
+			"ZH": "任何閒聊的語音"
+		}
+	}]
+},
+{
+	"id": "693747713816133682",
+	"type": "category",
+	"name": "ENGLISH LOBBY",
+	"descrp":
+	{
+		"ZH": "英文",
+		"EN": "English",
+		"JP": "英語"
+	},
+	"channels": [
+	{
+		"id": "693751949610188810",
+		"type": "text",
+		"name": "announcement",
+		"topic":
+		{
+			"EN": "Rules, invite link"
+		}
+	},
+	{
+		"id": "693751773999136809",
+		"type": "text",
+		"name": "rayark-en",
+		"topic":
+		{
+			"EN": "Rayark related"
+		}
+	},
+	{
+		"id": "687754264331943941",
+		"type": "text",
+		"name": "general",
+		"topic":
+		{
+			"EN": "Chat literally anything"
+		}
+	}]
+},
+{
+	"id": "693753034005676032",
+	"type": "category",
+	"name": "日本語 ホール",
+	"descrp":
+	{
+		"ZH": "日文",
+		"EN": "Japanese",
+		"JP": "日本語"
+	},
+	"channels": [
+	{
+		"id": "693753370116358165",
+		"type": "text",
+		"name": "お知らせ",
+		"topic":
+		{
+			"JP": "メッセージルール、招待リンク"
+		}
+	},
+	{
+		"id": "693753901748584478",
+		"type": "text",
+		"name": "rayark-jp",
+		"topic":
+		{
+			"JP": "レイアークニュース、ファンページリツイート"
+		}
+	},
+	{
+		"id": "693754708220968991",
+		"type": "text",
+		"name": "トーク",
+		"topic":
+		{
+			"JP": "チャットルーム"
+		}
+	}]
+},
+{
+	"id": "675012818193481728",
+	"type": "category",
+	"name": "音樂 MUSIC",
+	"channels": [
+	{
+		"id": "675012492853903390",
+		"type": "text",
+		"name": "點歌區-music_request",
+		"topic":
+		{
+			"ZH": "音樂頻道點歌區" ,
+			"EN": "Music requests for music channel",
+			"JP": "楽曲のリクエスト"
+		},
+		"warning":
+		{
+			"ZH": "使用說明參閱該頻道釘選",
+			"EN": "Read pinned message for command usage",
+			"JP": ""
+		}
+	},
+	{
+		"id": "675012411622948864",
+		"type": "voice",
+		"name": "音樂-music",
+		"topic":
+		{
+			"ZH": "音樂頻道",
+			"EN": "Music channel",
+			"JP": "音楽プレーヤー"
+		}
+	}]
+},
+{
+	"id": "674891882807033866",
+	"type": "category",
+	"name": "雷亞遊戲 RAYARK GAMES",
+	"channels": [
+	{
+		"id": "674892202643685376",
+		"type": "text",
+		"name": "mandora",
+		"topic":
+		{
+			"ZH": "",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674892097395884042",
+		"type": "text",
+		"name": "cytus",
+		"topic":
+		{
+			"ZH": "CYTUS\nCYTUS II\nCYTUS α",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674979924494385152",
+		"type": "text",
+		"name": "voez",
+		"topic":
+		{
+			"ZH": "",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674892439630249984",
+		"type": "text",
+		"name": "deemo",
+		"topic":
+		{
+			"ZH": "Deemo\nDeemo -Reborn-\nDeemo II",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674892179889586207",
+		"type": "text",
+		"name": "sdorica",
+		"topic":
+		{
+			"ZH": "",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674892417543176192",
+		"type": "text",
+		"name": "mo",
+		"topic":
+		{
+			"ZH": "Mo -Astray-",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674892241059446805",
+		"type": "text",
+		"name": "implosion",
+		"topic":
+		{
+			"ZH": "",
+			"EN": "",
+			"JP": ""
+		}
+	},
+	{
+		"id": "674892516612505600",
+		"type": "text",
+		"name": "soul_of_eden",
+		"topic":
+		{
+			"ZH": "",
+			"EN": "",
+			"JP": ""
+		}
+	}]
+},
+{
+	"id": "674894718899060736",
+	"type": "category",
+	"name": "主題 TOPIC",
+	"channels": [
+	{
+		"id": "674897661769285670",
+		"type": "text",
+		"name": "畫廊-art_gallery",
+		"topic":
+		{
+			"ZH": "歡迎會 fafa ㄉ大佬曬糧",
+			"EN": "Art sharing",
+			"JP": "ギャラリー"
+		},
+		"warning":
+		{
+			"ZH": "非自繪請附圖源及繪師！",
+			"EN": "Always put credit to the original artist!",
+			"JP": "ソースと著者を追加してください"
+		}
+	},
+	{
+		"id": "691533621483274260",
+		"type": "text",
+		"name": "概念店-rayark_concept",
+		"topic":
+		{
+			"ZH": "雷亞概念店與蘭空咖啡",
+			"EN": "Rayark Concept and Voez Cafe",
+			"JP": "レイアークコンセプト"
+		}
+	},
+	{
+		"id": "675190642124521472",
+		"type": "text",
+		"name": "概念店分店-showcase",
+		"topic":
+		{
+			"ZH": "給盤子曬周邊",
+			"EN": "Show your merchandise",
+			"JP": "グッズショーケース"
+		}
+	},
+	{
+		"id": "674891961966133290",
+		"type": "text",
+		"name": "食物-food",
+		"topic":
+		{
+			"ZH": "來用美食和宵夜互相傷害啊！",
+			"EN": "photos of food, food and food",
+			"JP": "~~食べ物~~ラーメンは神だ！"
+		}
+	},
+	{
+		"id": "675013235941965854",
+		"type": "text",
+		"name": "遊戲-game",
+		"topic":
+		{
+			"ZH": "其他遊戲討論",
+			"EN": "Other games",
+			"JP": "他のゲーム雑談"
+		}
+	},
+	{
+		"id": "675159185889034240",
+		"type": "text",
+		"name": "負能量-negative",
+		"topic":
+		{
+			"ZH": "各式抱怨、情緒發洩",
+			"EN": "Complaining",
+			"JP": "文句チャット"
+		},
+		"warning":
+		{
+			"ZH": "留言前請務必閱讀該頻道釘選",
+			"EN": "Read pinned messages beforehand",
+			"JP": ""
+		}
+	},
+	{
+		"id": "676067274666410034",
+		"type": "text",
+		"name": "洗版-spam",
+		"topic":
+		{
+			"ZH": "各種洗版",
+			"EN": "spam anything you like",
+			"JP": "スパム"
+		}
+	},
+	{
+		"id": "674895907682123776",
+		"type": "voice",
+		"name": "遊戲-gaming",
+		"topic":
+		{
+			"ZH": "遊戲語音房",
+			"EN": "Voice chat for gaming",
+			"JP": "ゲームルーム"
+		}
+	}]
+},
+{
+	"id": "674895182935621642",
+	"type": "category",
+	"name": "伺服器管理 SERVER MANAGEMENT",
+	"channels": [
+	{
+		"id": "658649824668811268",
+		"type": "text",
+		"name": "管理討論-management_discussion",
+		"topic":
+		{
+			"ZH": "歡迎所有人參與伺服器經營討論",
+			"EN": "Discussion about server management",
+			"JP": "サーバーディスカッションへようこそ"
+		}
+	},
+	{
+		"id": "693451767362486323",
+		"type": "text",
+		"name": "會議-conference",
+		"topic":
+		{
+			"ZH": "會議討論紀錄",
+			"EN": "Conference discussion records",
+			"JP": "會議レコード"
+		}
+	},
+	{
+		"id": "674916694543564810",
+		"type": "text",
+		"name": "怎麼使用-how_to_use",
+		"topic":
+		{
+			"ZH": "Discord 使用上的疑問",
+			"EN": "Questions and tutorials regarding how to use Discord",
+			"JP": "discordの使い方"
+		}
+	},
+	{
+		"id": "674911470785658880",
+		"type": "text",
+		"name": "指令-command",
+		"topic":
+		{
+			"ZH": "機器人指令區",
+			"EN": "Bot commands",
+			"JP": "BOTプログラミングエリア"
+		},
+		"warning":
+		{
+			"ZH": "請勿在他處下指令！",
+			"EN": "DO NOT send bot commands in any other channels!",
+			"JP": "他の場所にプログラムしないでください"
+		}
+	},
+	{
+		"id": "674924774337544223",
+		"type": "text",
+		"name": "貼圖許願-emoji_propose",
+		"topic":
+		{
+			"ZH": "貼圖申請",
+			"EN": "Propose your emojis here",
+			"JP": "絵文字制作提案"
+		}
+	},
+	{
+		"id": "675023447637622804",
+		"type": "text",
+		"name": "抖內-donation",
+		"topic":
+		{
+			"ZH": "伺服器或機器人抖內紀錄",
+			"EN": "Donations records towards bots or this server",
+			"JP": "寄付レコード"
+		}
+	},
+	{
+		"id": "684259321403801630",
+		"type": "text",
+		"name": "除錯-debug",
+		"topic":
+		{
+			"ZH": "機器人除錯",
+			"EN": "Bot debugging",
+			"JP": "デバッグ"
+		}
+	}]
+}]

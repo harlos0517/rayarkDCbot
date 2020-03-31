@@ -165,6 +165,18 @@ function initExp(msg, bot, db) {
 		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
 	})
 
+	// Translator
+	let incr4 = 50000
+	util.debugSend(`Adding ${incr4} EXP to Translator.`, msg.channel)
+	User.findOneAndUpdate({userId: '594504293021777921'}, {$inc: {exp: incr4}},
+		{upsert: true, new: true}, (err,doc)=>{
+		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+	})
+	User.findOneAndUpdate({userId: '465190593006403604'}, {$inc: {exp: incr4}},
+		{upsert: true, new: true}, (err,doc)=>{
+		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+	})
+
 	// Search for history messages
 	let Channel = db.model('Channel', channelSchema)
 	Channel.find((err, docs)=>{
