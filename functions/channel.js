@@ -4,8 +4,8 @@ const fs = require('fs')
 const config = require('../config.js')
 
 function channelSetup(bot) {
-	// let guide = bot.channels.get('693829643295260705')
-	let guide = bot.channels.get(config.dbgChannel)
+	let guide = bot.channels.get('693829643295260705')
+	// let guide = bot.channels.get(config.dbgChannel)
 
 	let channels = require('./channels.json')
 	let str = '**[ 頻道導覽 ]**\n'
