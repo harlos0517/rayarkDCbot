@@ -84,7 +84,7 @@
 		{
 			"ZH": "顯示所有伺服器自訂貼圖",
 			"EN": "Displays all server emojis",
-			"JP": "レアビレッジ(Rayark Village)の絵文字をすべて表示"
+			"JP": "サーバーの絵文字をすべて表示"
 		}
 	},
 	{
@@ -235,7 +235,7 @@
 		{
 			"ZH": "使用說明參閱該頻道釘選",
 			"EN": "Read pinned message for command usage",
-			"JP": ""
+			"JP": "使用前に必ずピン留めされたメッセージをご確認ください"
 		}
 	},
 	{
@@ -424,7 +424,7 @@
 		{
 			"ZH": "留言前請務必閱讀該頻道釘選",
 			"EN": "Read pinned messages beforehand",
-			"JP": ""
+			"JP": "使用前に必ずピン留めされたメッセージをご確認ください"
 		}
 	},
 	{
