@@ -15,6 +15,7 @@ const selector = {
 	caption: '._6a._5u5j._6b>h5 .fwn.fcg',
 	content: '._5pbx.userContent._3576',
 	image: 'img.scaledImageFitWidth',
+	video: '._3chq',
 	headpic: 'img._s0._4ooo._5xib._5sq7._44ma._rw.img'
 }
 
@@ -34,7 +35,8 @@ function fetchPage(fanpage, bot) {
 			let link = root + post.find(selector.link).attr('href').split('?')[0]
 			if (fanpage.cur && fanpage.cur !== link) {
 				let caption = post.find(selector.caption).text()
-				let image = post.find(selector.image).attr('src')
+				let image = post.find(selector.image).attr('src') ||
+					post.find(selector.video).attr('src')
 				let headpic = post.find(selector.headpic).attr('src')
 				let content = post.find(selector.content)
 				content.find('.text_exposed_hide').remove()
@@ -52,6 +54,8 @@ function fetchPage(fanpage, bot) {
 				content = content.replace(/\#/g, '\\\#')
 				content = content.replace(/\@/g, '\\\@')
 				content = content.replace(urlRegex(), m=>`<${m}>`)
+				if (content.length > 1024)
+					content = content.slice(0,1024) + '...'
 				const embed = new Embed()
 					.setColor('#3578E5')
 					.setTitle(caption)
@@ -73,7 +77,7 @@ function fetchPage(fanpage, bot) {
 
 function fetchPages(bot) {
 	config.fanpages.forEach(fanpage=>{ fetchPage(fanpage, bot) })
-	// fetchPage(config.fanpages[7], bot)
+	// fetchPage(config.fanpages[1], bot)
 }
 
 function facebookFeed(bot) {
