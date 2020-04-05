@@ -55,7 +55,7 @@ function addExp(msg, bot, db) {
 function addExpTo(msg, bot, db) {
 	let words = msg.content.split(' ')
 	var incr = Number(words[2])
-	if (!msg.mentions.members.size || !(incr > 0)) {
+	if (!msg.mentions.members.size || isNaN(incr)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
 	} else msg.mentions.members.tap(member=>{
 		if (member.user.bot) util.debugSend(`不能對機器人 (${member}) 增加經驗值。`, msg.channel)
