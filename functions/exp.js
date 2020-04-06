@@ -73,6 +73,29 @@ function addExpTo(msg, bot, db) {
 	})
 }
 
+function addExpToId(msg, bot, db) {
+	let words = msg.content.split(' ')
+	var incr = Number(words[2])
+	var id = words[3]
+	console.log(id)
+	if (isNaN(incr)) {
+		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
+	} else bot.guilds.get(config.guildId).fetchMember(id).then(member=>{
+		if (member.user.bot) util.debugSend(`不能對機器人 (${member}) 增加經驗值。`, msg.channel)
+		else {
+			let User = db.model('User', userSchema)
+			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
+				{upsert: true, new: true}, (err,doc)=>{
+				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+				else {
+					util.debugSend(`${id} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`, msg.channel)
+					checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
+				}
+			})
+		}
+	})
+}
+
 function setChannelExp(msg, bot, db) {
 	var words = msg.content.split(' ')
 	var r = Number(words[2])
@@ -310,6 +333,11 @@ module.exports = function(bot, db) {
 			if (util.cmd(msg, 'exp add'))
 				if (util.checkAdmin(msg) && util.checkChannel(msg))
 					addExpTo(msg, bot, db)
+
+			// add exp manual2
+			if (util.cmd(msg, 'exp addById'))
+				if (util.checkAdmin(msg) && util.checkChannel(msg))
+					addExpToId(msg, bot, db)
 
 			// show exp
 			if (util.cmd(msg, 'exp show'))
