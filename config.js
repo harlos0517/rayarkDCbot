@@ -109,5 +109,18 @@ module.exports = {
 		name: 'Rayark Concept',
 		abbr: 'concept',
 		role: '691534019631775785'
+	}],
+	languageRoles: [{
+		name: 'EN',
+		role: '706135640013799465',
+		channel: '687754264331943941'
+	},{
+		name: 'ZH',
+		role: '706135737627836437',
+		channel: '658648174784937988'
+	},{
+		name: 'JP',
+		role: '706135728836444170',
+		channel: '693754708220968991'
 	}]
 }

@@ -12,6 +12,14 @@ function allow(msg, bot, db) {
 			msg.channel.send(`${member} 已經是雷亞粉絲。`, msg.channel)
 		else {
 			member.addRole(config.fanRole)
+			let lang = msg.content.split(' ')[1]
+			let channel = config.generalChannel
+			config.languageRoles.forEach(e=>{
+				if (lang === e.name) {
+					member.addRole(e.role)
+					channel = e.channel
+				}
+			})
 			var incr = config.fanRoleExp
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
@@ -19,7 +27,7 @@ function allow(msg, bot, db) {
 				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
 				else util.debugSend(`${member} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`, msg.channel)
 			})
-			bot.channels.get(config.generalChannel).send(`恭喜 ${member} 成為雷亞粉絲！`)
+			bot.channels.get(channel).send(`恭喜 ${member} 成為雷亞粉絲！`)
 		}
 	})
 }

@@ -50,8 +50,7 @@ const events = [
 	'webhookUpdate'
 ]
 
-function debugLog(bot, event, str) {
-	let channel = bot.channels.get(config.dbgChannel)
+function debugLog(event, str) {
 	console.log(`[ ${event} ]${str?`  ${str}`:''}`)
 }
 
@@ -59,8 +58,8 @@ function debug(bot) {
 	util.tryCatch(()=>{
 		events.forEach(event=>{
 			if (event === 'debug') {
-				bot.on(event, (info)=>{ debugLog(bot, 'debug', info) })
-			} else bot.on(event, ()=>{ debugLog(bot, event) })
+				bot.on(event, (info)=>{ debugLog('debug', info) })
+			} else bot.on(event, ()=>{ debugLog(event) })
 		})
 	}, bot)
 }
