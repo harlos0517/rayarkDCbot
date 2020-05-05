@@ -34,14 +34,14 @@ function checkLevelup(msg, bot, user, a, b) {
 function addExp(msg, bot, db) {
 	let Channel = db.model('Channel', channelSchema)
 	Channel.findOne({channelId: msg.channel.id}, (err,doc)=>{
-		if (err) util.debugSend(`Find Channels error: ${err}`, bot.channels.get(config.dbgChannel))
+		if (err) util.debugSend(`Find Channels error: ${err}`, bot)
 		else if (!doc || doc.expRatio <= 0) return
 		else {
 			var incr = msg.content.length * doc.expRatio
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: msg.author.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
-				if (err) util.debugSend(`Update Users error: ${err}`, bot.channels.get(config.dbgChannel))
+				if (err) util.debugSend(`Update Users error: ${err}`, bot)
 				else {
 					if (msg.channel.id === config.dbgChannel)
 						msg.channel.send(`${msg.author} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
@@ -58,14 +58,14 @@ function addExpTo(msg, bot, db) {
 	if (!msg.mentions.members.size || isNaN(incr)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
 	} else msg.mentions.members.tap(member=>{
-		if (member.user.bot) util.debugSend(`不能對機器人 (${member}) 增加經驗值。`, msg.channel)
+		if (member.user.bot) msg.channel.send(`不能對機器人 (${member}) 增加經驗值。`)
 		else {
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
-				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+				if (err) msg.channel.send(`Update Users error: ${err}`)
 				else {
-					util.debugSend(`${member} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`, msg.channel)
+					msg.channel.send(`${member} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`)
 					checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
 				}
 			})
@@ -81,14 +81,14 @@ function addExpToId(msg, bot, db) {
 	if (isNaN(incr)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
 	} else bot.guilds.get(config.guildId).fetchMember(id).then(member=>{
-		if (member.user.bot) util.debugSend(`不能對機器人 (${member}) 增加經驗值。`, msg.channel)
+		if (member.user.bot) msg.channel.send(`不能對機器人 (${member}) 增加經驗值。`)
 		else {
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
-				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+				if (err) msg.channel.send(`Update Users error: ${err}`)
 				else {
-					util.debugSend(`${id} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`, msg.channel)
+					msg.channel.send(`${id} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`)
 					checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
 				}
 			})
@@ -105,8 +105,8 @@ function setChannelExp(msg, bot, db) {
 		let Channel = db.model('Channel', channelSchema)
 		Channel.findOneAndUpdate({channelId: ch.id}, {expRatio: r},
 			{upsert: true, new: true}, (err,doc)=>{
-			if (err) util.debugSend(`Update Channels error: ${err}`, msg.channel)
-			else util.debugSend(`成功更動 ${ch} 頻道經驗值比率為 ${doc.expRatio}。`, msg.channel)
+			if (err) msg.channel.send(`Update Channels error: ${err}`)
+			else msg.channel.send(`成功更動 ${ch} 頻道經驗值比率為 ${doc.expRatio}。`)
 		})
 	})
 }
@@ -114,7 +114,7 @@ function setChannelExp(msg, bot, db) {
 function listChannelExp(msg, bot, db) {
 	let Channel = db.model('Channel', channelSchema)
 	Channel.find((err, docs)=>{
-		if (err) util.debugSend(`Find Channels error: ${err}`, bot.channels.get(config.dbgChannel))
+		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
 			var str = '**[ 各頻道經驗值比率列表 ]**\n'
 			docs.forEach((e,i,a)=>{
@@ -151,64 +151,64 @@ async function addHistoryExp(channel, ratio, db) {
 }
 
 function initExp(msg, bot, db) {
-	util.debugSend(`[ WARNING ]  Use this only after you have reset EXP.`, msg.channel)
+	msg.channel.send(`[ WARNING ]  Use this only after you have reset EXP.`)
 
 	// Fans
 	let incr = config.fanRoleExp
 	let role = bot.guilds.get(config.guildId).roles.get(config.fanRole)
-	util.debugSend(`Adding ${incr} EXP to all ${role.name}.`, msg.channel)
+	msg.channel.send(`Adding ${incr} EXP to all ${role.name}.`)
 	role.members.tap(member=>{
 		if (member.user.bot) return
 		let User = db.model('User', userSchema)
 		User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 			{upsert: true, new: true}, (err,doc)=>{
-			if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+			if (err) msg.channel.send(`Update Users error: ${err}`)
 		})
 	})
 
 	// Promoters
 	let incr2 = 6000
 	let role2 = bot.guilds.get(config.guildId).roles.get('684789134832697347')
-	util.debugSend(`Adding ${incr2} EXP to all ${role2.name}.`, msg.channel)
+	msg.channel.send(`Adding ${incr2} EXP to all ${role2.name}.`)
 	role2.members.tap(member=>{
 		if (member.user.bot) return
 		let User = db.model('User', userSchema)
 		User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr2}},
 			{upsert: true, new: true}, (err,doc)=>{
-			if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+			if (err) msg.channel.send(`Update Users error: ${err}`)
 		})
 	})
 
 	// Artist of headpic
 	let incr3 = 50000
 	let User = db.model('User', userSchema)
-	util.debugSend(`Adding ${incr3} EXP to Headpic Artist.`, msg.channel)
+	msg.channel.send(`Adding ${incr3} EXP to Headpic Artist.`)
 	User.findOneAndUpdate({userId: '600227019929813004'}, {$inc: {exp: incr3}},
 		{upsert: true, new: true}, (err,doc)=>{
-		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+		if (err) msg.channel.send(`Update Users error: ${err}`)
 	})
 
 	// Translator
 	let incr4 = 50000
-	util.debugSend(`Adding ${incr4} EXP to Translator.`, msg.channel)
+	msg.channel.send(`Adding ${incr4} EXP to Translator.`)
 	User.findOneAndUpdate({userId: '594504293021777921'}, {$inc: {exp: incr4}},
 		{upsert: true, new: true}, (err,doc)=>{
-		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+		if (err) msg.channel.send(`Update Users error: ${err}`)
 	})
 	User.findOneAndUpdate({userId: '465190593006403604'}, {$inc: {exp: incr4}},
 		{upsert: true, new: true}, (err,doc)=>{
-		if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
+		if (err) msg.channel.send(`Update Users error: ${err}`)
 	})
 
 	// Search for history messages
 	let Channel = db.model('Channel', channelSchema)
 	Channel.find((err, docs)=>{
-		if (err) util.debugSend(`Find Channels error: ${err}`, msg.channel)
+		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
 			docs.forEach((e,i,a)=>{
 				let channel = bot.channels.get(e.channelId)
 				addHistoryExp(channel, e.expRatio, db).then(total=>{
-					util.debugSend(`History exp added for channel ${channel}`, msg.channel)
+					msg.channel.send(`History exp added for channel ${channel}`)
 				})
 			})
 		}
@@ -219,8 +219,8 @@ function initReset(msg, bot, db) {
 	let role = bot.guilds.get(config.guildId).roles.get(config.fanRole)
 	let User = db.model('User', userSchema)
 	User.collection.drop((err,res)=>{
-		if (err) util.debugSend(`Drop Users error: ${err}`, msg.channel)
-		else util.debugSend(`Exp reset.`, msg.channel)
+		if (err) msg.channel.send(`Drop Users error: ${err}`)
+		else msg.channel.send(`Exp reset.`)
 	})
 }
 
@@ -228,7 +228,7 @@ function showExp(msg, bot, db) {
 	let target = msg.mentions.members.size ? msg.mentions.members.first() : msg.member
 	let User = db.model('User', userSchema)
 	User.find((err, docs)=>{
-		if (err) util.debugSend(`Find Users error: ${err}`, bot.channels.get(config.dbgChannel))
+		if (err) msg.channel.send(`Find Users error: ${err}`)
 		else {
 			//set rank
 			docs.sort((a,b)=>(b.exp - a.exp))
@@ -262,7 +262,7 @@ function showTop(msg, bot, db) {
 	var page = Number(msg.content.split(' ')[2]) || 1
 	let User = db.model('User', userSchema)
 	User.find((err, docs)=>{
-		if (err) util.debugSend(`Find Users error: ${err}`, bot.channels.get(config.dbgChannel))
+		if (err) msg.channel.send(`Find Users error: ${err}`)
 		else {
 			var str = `**[ 排行榜 ]** 頁 ${page}/${Math.ceil(docs.length/10)}\n`
 			let guild = bot.guilds.get(config.guildId)

@@ -24,8 +24,8 @@ function allow(msg, bot, db) {
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
-				if (err) util.debugSend(`Update Users error: ${err}`, msg.channel)
-				else util.debugSend(`${member} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`, msg.channel)
+				if (err) msg.channel.send(`Update Users error: ${err}`)
+				else msg.channel.send(`${member} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
 			})
 			bot.channels.get(channel).send(`Congrats! ${member} has become a Rayark Fan!`)
 		}

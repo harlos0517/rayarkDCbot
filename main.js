@@ -44,51 +44,49 @@ bot.on('ready', () => {
 		else console.log('Connected to MongoDB successfully.')
 	})
 
-	util.debugSend(`Puggi wakes up!`, bot.channels.get(config.dbgChannel))
+	util.debugSend(`Puggi wakes up!`, bot)
 })
 
 bot.on('message', msg => {
 	util.tryCatch(()=>{
 		// Ignore bot messages.
 		if (msg.author.bot) return
-		if (util.cmd(msg, 'restart'))
+		// restart command
+		if (util.cmd(msg, 'restart')) {
 			if (util.checkAdmin(msg) && util.checkChannel(msg)) {
-				util.debugSend(`Puggi goes to sleep.`, bot.channels.get(config.dbgChannel))
+				util.debugSend(`Puggi goes to sleep.`, bot)
 				setTimeout(()=>{
 					bot.destroy()
-					exec('node main.js rayark',(err,stdout,stderr)=>{
-						if (err) util.debugSend(err, bot.channels.get(config.dbgChannel))
-						else {
-							if (stdout) util.debugSend(stdout, bot.channels.get(config.dbgChannel))
-							if (stderr) util.debugSend(stderr, bot.channels.get(config.dbgChannel))
-							process.exit(0)
-						}
+					exec('node main.js rayark', (err,stdout,stderr)=>{
+						if (err) console.error(err)
+						else process.exit(0)
 					})
 				}, 1000)
 			}
-		if (util.cmd(msg, config.prefix+'git'))
+		}
+		// git command
+		if (util.cmd(msg, 'git')) {
 			if (util.checkAdmin(msg) && util.checkChannel(msg)) {
 				var git = exec(msg.content.slice(2), {
 					timeout: 15000
 				}, (err, stdout, stderr)=>{
 					if (err && err.length) msg.channel.send(err)
-					// if (stdout) msg.channel.send(`1\n\`\`\`\n${stdout}\`\`\``)
-					// if (stderr) msg.channel.send(`2\n\`\`\`\n${stderr}\`\`\``)
 				})
 				git.stdout.on('data', data=>{
 					trim(data).forEach(sec=>{
-						msg.channel.send(`stdout\n\`\`\`bash\n${sec}\`\`\``)
+						msg.channel.send(`\`\`\`bash\n${sec}\`\`\``)
 					})
 				})
 				git.stderr.on('data', data=>{
 					trim(data).forEach(sec=>{
-						msg.channel.send(`stderr\n\`\`\`bash\n${sec}\`\`\``)
+						msg.channel.send(`\`\`\`bash\n${sec}\`\`\``)
 					})
 				})
 				git.on('close', code=>{
 					msg.channel.send(`\`exited(${Number(code)})\``)
 				})
 			}
+		}
 	}, bot)
 })
 
