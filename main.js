@@ -22,6 +22,8 @@ bot.on('ready', () => {
 	})
 
 	util.debugSend(`Puggi wakes up!`, bot)
+	// fetch all Members!
+	bot.guilds.get(config.guildId).fetchMembers()
 })
 
 require('./debug.js')(bot)
