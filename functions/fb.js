@@ -98,16 +98,18 @@ function fetchPages(bot) {
 }
 
 function facebookFeed(bot) {
-	util.tryCatch(()=>{
-		fetchPages(bot)
-		let now = Date.now()
-		let curMs = now % interval
-		let waitms = (interval + 60000 - curMs) % interval
-		bot.setTimeout(()=>{
+	bot.on('ready', () => {
+		util.tryCatch(()=>{
 			fetchPages(bot)
-			bot.setInterval(()=>{ fetchPages(bot) }, interval)
-		}, waitms)
-	}, bot)
+			let now = Date.now()
+			let curMs = now % interval
+			let waitms = (interval + 60000 - curMs) % interval
+			bot.setTimeout(()=>{
+				fetchPages(bot)
+				bot.setInterval(()=>{ fetchPages(bot) }, interval)
+			}, waitms)
+		}, bot)
+	})
 }
 
 module.exports = facebookFeed
