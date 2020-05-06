@@ -92,7 +92,7 @@ function fetchPage(fanpage, bot) {
 function fetchPages(bot) {
 	let now = new Date(Date.now())
 	if (now.getHours() < 9 || now.getHours > 22) return
-	util.debugSend('Fetching Facebook posts...')
+	util.debugSend('Fetching Facebook posts...', bot)
 	config.fanpages.forEach(fanpage=>{ fetchPage(fanpage, bot) })
 	// fetchPage(config.fanpages[0], bot)
 }
