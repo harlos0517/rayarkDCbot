@@ -261,7 +261,7 @@ function showExp(msg, bot, db) {
 function showTop(msg, bot, db) {
 	var page = Number(msg.content.split(' ')[2]) || 1
 	let User = db.model('User', userSchema)
-	User.find((err, docs)=>{
+	User.find(async (err, docs)=>{
 		if (err) msg.channel.send(`Find Users error: ${err}`)
 		else {
 			var str = `**[ 排行榜 ]** 頁 ${page}/${Math.ceil(docs.length/10)}\n`
@@ -281,7 +281,7 @@ function showTop(msg, bot, db) {
 			})
 			let sliced = docs.slice(start,start + 10)
 			if (sliced.length) {
-				sliced.forEach(async(e,i,a)=>{
+				for (e of sliced) {
 					let member = guild.members.get(e.userId)
 					let substr = `${e.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}`
 					substr += `**${e.rank}**   `
@@ -289,11 +289,15 @@ function showTop(msg, bot, db) {
 					if (member)
 						substr += `${member.nickname ? member.nickname : member.user.username}`
 					else {
-						let user = await bot.fetchUser(e.userId)
-						substr += user ? `${user.username} *(已離開)*` : '*(帳號已刪除)*'
+						try {
+							let user = await bot.fetchUser(e.userId)
+							substr += `${user.username} *(已離開)*`
+						} catch {
+							substr += '*(帳號已刪除)*'
+						}
 					}
 					str += substr + '\n'
-				})
+				}
 				msg.channel.send(str)
 			} else msg.channel.send(`頁碼超出範圍。總頁數為 ${Math.ceil(docs.length/10)}`)
 		}
