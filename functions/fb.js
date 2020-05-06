@@ -16,10 +16,11 @@ const selector = {
 	content: '._5pbx.userContent._3576',
 	image: 'img.scaledImageFitWidth',
 	video: '._3chq',
-	headpic: 'img._s0._4ooo._5xib._5sq7._44ma._rw.img'
+	headpic: 'img._s0._4ooo._5xib._5sq7._44ma._rw.img',
+	timestamp: '._6a._5u5j._6b abbr._5ptz'
 }
 
-const interval = 600000
+const interval = 1800000
 
 function fetchPage(fanpage, bot) {
 	request({
@@ -32,12 +33,25 @@ function fetchPage(fanpage, bot) {
 			let i = 0
 			while($(posts.get(i)).find(selector.top).length) i++
 			let post = $(posts.get(i))
-			let link = root + post.find(selector.link).attr('href').split('?')[0]
-			if (fanpage.cur && fanpage.cur !== link) {
+			let checkElement = function (ele, eleName) {
+				if (!ele.length) {
+					util.debugSend(`[ ERROR ] fetchPage() : ${eleName} element not found! Fanpage : ${fanpage.name}`, bot)
+					return false
+				} else return true
+			}
+			// check timestamp
+			let timestamp = post.find(selector.timestamp)
+			if (!checkElement(timestamp, 'timestamp')) return
+			let utime = timestamp.attr('data-utime') || 0
+			if (fanpage.updateTime && utime > fanpage.updateTime) {
+				let link = post.find(selector.link).attr('href')
+				checkElement(link, 'link')
+				link = root + link.split('?')[0]
 				let caption = post.find(selector.caption).text()
 				let image = post.find(selector.image).attr('src') ||
-					post.find(selector.video).attr('src')
+					post.find(selector.video).attr('src') || ''
 				let headpic = post.find(selector.headpic).attr('src')
+				// handle content
 				let content = post.find(selector.content)
 				content.find('.text_exposed_hide').remove()
 				content.find('p').append('<br>')
@@ -63,27 +77,36 @@ function fetchPage(fanpage, bot) {
 					.setAuthor(`${fanpage.name} (Facebook)`, headpic, `${root}/${fanpage.id}`)
 					.setDescription(content)
 					.setImage(image)
-					// .setTimestamp()
+					.setTimestamp(utime*1000)
 				bot.channels.get(fanpage.channel)
 					.send(`${bot.guilds.get(config.guildId).roles.get(fanpage.pinRole)}`,
 						{embed: embed})
 				// bot.channels.get(config.dbgChannel)
 				// 	.send('\@TEST', {embed: embed})
 			}
-			fanpage.cur = link
-		}, bot)
+			fanpage.updateTime = utime
+		}, bot, `Fanpage : ${fanpage.name}`)
 	})
 }
 
 function fetchPages(bot) {
+	let now = new Date(Date.now())
+	if (now.getHours() < 9 || now.getHours > 22) return
+	util.debugSend('Fetching Facebook posts...')
 	config.fanpages.forEach(fanpage=>{ fetchPage(fanpage, bot) })
-	// fetchPage(config.fanpages[1], bot)
+	// fetchPage(config.fanpages[0], bot)
 }
 
 function facebookFeed(bot) {
 	util.tryCatch(()=>{
 		fetchPages(bot)
-		setInterval(()=>{ fetchPages(bot) }, interval)
+		let now = Date.now()
+		let curMs = now % interval
+		let waitms = (interval + 60000 - curMs) % interval
+		bot.setTimeout(()=>{
+			fetchPages(bot)
+			bot.setInterval(()=>{ fetchPages(bot) }, interval)
+		}, waitms)
 	}, bot)
 }
 

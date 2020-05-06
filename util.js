@@ -35,7 +35,8 @@ module.exports = {
 		try {
 			func()
 		} catch (err) {
-			let errorMsg = `[ ERROR ] ${err.name}: ${err.message}${info?`\n${info}`:''}`
+			let errorMsg = '[ ERROR ] '
+			errorMsg += (typeof(err) === 'string') ? err : `${err.name}: ${err.message}${info?`\n${info}`:''}`
 			console.log(errorMsg)
 			if (bot && bot.channels && bot.channels.get && bot.channels.get(config.dbgChannel))
 			bot.channels.get(config.dbgChannel).send(errorMsg)
