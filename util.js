@@ -26,15 +26,17 @@ module.exports = {
 		       (msg.content.slice(0, cmd2.length) === cmd2) ||
 		       (msg.content.slice(0, cmd3.length) === cmd3)
 	},
-	debugSend: function(err, ch) {
-		if (ch) ch.send(err)
+	debugSend: function(err, bot) {
+		if (bot && bot.channels && bot.channels.get && bot.channels.get(config.dbgChannel))
+			bot.channels.get(config.dbgChannel).send(err)
 		console.log(err)
 	},
-	tryCatch: function(func, bot) {
+	tryCatch: function(func, bot, info) {
 		try {
 			func()
 		} catch (err) {
-			let errorMsg = `[ ERROR ] ${err.name}: ${err.message}`
+			let errorMsg = '[ ERROR ] '
+			errorMsg += (typeof(err) === 'string') ? err : `${err.name}: ${err.message}${info?`\n${info}`:''}`
 			console.log(errorMsg)
 			if (bot && bot.channels && bot.channels.get && bot.channels.get(config.dbgChannel))
 			bot.channels.get(config.dbgChannel).send(errorMsg)
@@ -42,7 +44,7 @@ module.exports = {
 	},
 	checkAdmin: function(msg) {
 		if (!msg.member.roles.has(config.adminRole)) {
-			msg.channel.send('此功能僅限管理原使用。')
+			msg.channel.send('此功能僅限管理員使用。')
 			return false
 		} else return true
 	},
