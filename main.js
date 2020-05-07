@@ -2,12 +2,12 @@ const Discord = require('discord.js')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 
+dotenv.config()
+
 const util = require('./util.js')
 const config = require('./config.js')
 
 const bot = new Discord.Client()
-
-dotenv.config()
 
 // connect to mongoDB when bot is ready
 bot.on('ready', () => {
