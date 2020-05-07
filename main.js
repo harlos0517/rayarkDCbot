@@ -1,13 +1,13 @@
-const events = require('events')
-const { exec } = require('child_process')
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
+const dotenv = require('dotenv')
 
-const auth = require('./auth.json')
 const util = require('./util.js')
 const config = require('./config.js')
 
 const bot = new Discord.Client()
+
+dotenv.config()
 
 // connect to mongoDB when bot is ready
 bot.on('ready', () => {
@@ -16,7 +16,7 @@ bot.on('ready', () => {
 	mongoose.set('useUnifiedTopology', true)
 	mongoose.set('useFindAndModify', false)
 	mongoose.set('useCreateIndex', true)
-	mongoose.connect(auth.dbUrl, (err)=>{
+	mongoose.connect(process.env.DBURL, (err)=>{
 		if (err) console.error(`MongoDB connection error: ${err}`)
 		else console.log('Connected to MongoDB successfully.')
 	})
@@ -38,4 +38,4 @@ require('./functions/fb.js')(bot)
 require('./functions/channel.js')(bot)
 
 // login
-bot.login(auth.token)
+bot.login(process.env.TOKEN)

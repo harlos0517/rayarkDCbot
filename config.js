@@ -1,4 +1,4 @@
-const prefix     = '!'
+const prefix     = (process.env.NODE_ENV === 'production') ? '!' : '?'
 const guildId    = '658648174784937985'
 const spmChannel = '676067274666410034'
 const cmdChannel = '674911470785658880'

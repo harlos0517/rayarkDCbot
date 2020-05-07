@@ -6,6 +6,8 @@ const urlRegex = require('url-regex')
 const util = require('../util.js')
 const config = require('../config.js')
 
+const DEBUG = false
+
 const root = 'https://www.facebook.com'
 
 const selector = {
@@ -43,7 +45,7 @@ function fetchPage(fanpage, bot) {
 			let timestamp = post.find(selector.timestamp)
 			if (!checkElement(timestamp, 'timestamp')) return
 			let utime = timestamp.attr('data-utime') || 0
-			if (fanpage.updateTime && utime > fanpage.updateTime) {
+			if ((fanpage.updateTime && utime > fanpage.updateTime) || DEBUG) {
 				let link = post.find(selector.link).attr('href')
 				checkElement(link, 'link')
 				link = root + link.split('?')[0]
@@ -78,11 +80,14 @@ function fetchPage(fanpage, bot) {
 					.setDescription(content)
 					.setImage(image)
 					.setTimestamp(utime*1000)
-				bot.channels.get(fanpage.channel)
-					.send(`${bot.guilds.get(config.guildId).roles.get(fanpage.pinRole)}`,
-						{embed: embed})
-				// bot.channels.get(config.dbgChannel)
-				// 	.send('\@TEST', {embed: embed})
+				if (!DEBUG) {
+					bot.channels.get(fanpage.channel)
+						.send(`${bot.guilds.get(config.guildId).roles.get(fanpage.pinRole)}`,
+							{embed: embed})
+				} else {
+					bot.channels.get(config.dbgChannel)
+						.send('\@TEST', {embed: embed})
+				}
 			}
 			fanpage.updateTime = utime
 		}, bot, `Fanpage : ${fanpage.name}`)
@@ -93,8 +98,8 @@ function fetchPages(bot) {
 	let now = new Date(Date.now())
 	if (now.getHours() < 9 || now.getHours > 22) return
 	util.debugSend('Fetching Facebook posts...', bot)
-	config.fanpages.forEach(fanpage=>{ fetchPage(fanpage, bot) })
-	// fetchPage(config.fanpages[0], bot)
+	if (!DEBUG) config.fanpages.forEach(fanpage=>{ fetchPage(fanpage, bot) })
+	else fetchPage(config.fanpages[0], bot)
 }
 
 function facebookFeed(bot) {
