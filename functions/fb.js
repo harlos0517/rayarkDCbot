@@ -1,4 +1,4 @@
-const Embed = require('discord.js').RichEmbed
+const Embed = require('discord.js').MessageEmbed
 const request = require('request')
 const cheerio = require('cheerio')
 const urlRegex = require('url-regex')
@@ -82,7 +82,7 @@ function fetchPage(fanpage, bot) {
 					.setTimestamp(utime*1000)
 				if (!DEBUG) {
 					bot.channels.get(fanpage.channel)
-						.send(`${bot.guilds.get(config.guildId).roles.get(fanpage.pinRole)}`,
+						.send(`${bot.guilds.resolve(config.guildId).roles.cache.get(fanpage.pinRole)}`,
 							{embed: embed})
 				} else {
 					bot.channels.get(config.dbgChannel)
@@ -97,13 +97,14 @@ function fetchPage(fanpage, bot) {
 function fetchPages(bot) {
 	let now = new Date(Date.now())
 	if (now.getHours() < 9 || now.getHours > 22) return
-	util.debugSend('Fetching Facebook posts...', bot)
+	// util.debugSend('Fetching Facebook posts...', bot)
+	console.log('Fetching Facebook posts...')
 	if (!DEBUG) config.fanpages.forEach(fanpage=>{ fetchPage(fanpage, bot) })
 	else fetchPage(config.fanpages[0], bot)
 }
 
 function facebookFeed(bot) {
-	bot.on('ready', () => {
+	bot.once('ready', () => {
 		util.tryCatch(()=>{
 			fetchPages(bot)
 			let now = Date.now()

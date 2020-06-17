@@ -80,7 +80,7 @@ function addExpToId(msg, bot, db) {
 	console.log(id)
 	if (isNaN(incr)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
-	} else bot.guilds.get(config.guildId).fetchMember(id).then(member=>{
+	} else bot.guilds.resolve(config.guildId).members.fetch(id).then(member=>{
 		if (member.user.bot) msg.channel.send(`不能對機器人 (${member}) 增加經驗值。`)
 		else {
 			let User = db.model('User', userSchema)
@@ -134,7 +134,7 @@ async function addHistoryExp(channel, ratio, db) {
 
 	while (true) {
 		if (lastId) options.before = lastId
-		const messages = await channel.fetchMessages(options)
+		const messages = await channel.messages.fetch(options)
 		messages.tap(msg=>{
 			var incr = msg.content.length * ratio
 			if (msg.author.bot) return
@@ -155,7 +155,7 @@ function initExp(msg, bot, db) {
 
 	// Fans
 	let incr = config.fanRoleExp
-	let role = bot.guilds.get(config.guildId).roles.get(config.fanRole)
+	let role = bot.guilds.resolve(config.guildId).roles.cache.get(config.fanRole)
 	msg.channel.send(`Adding ${incr} EXP to all ${role.name}.`)
 	role.members.tap(member=>{
 		if (member.user.bot) return
@@ -168,7 +168,7 @@ function initExp(msg, bot, db) {
 
 	// Promoters
 	let incr2 = 6000
-	let role2 = bot.guilds.get(config.guildId).roles.get('684789134832697347')
+	let role2 = bot.guilds.resolve(config.guildId).roles.cache.get('684789134832697347')
 	msg.channel.send(`Adding ${incr2} EXP to all ${role2.name}.`)
 	role2.members.tap(member=>{
 		if (member.user.bot) return
@@ -216,7 +216,7 @@ function initExp(msg, bot, db) {
 }
 
 function initReset(msg, bot, db) {
-	let role = bot.guilds.get(config.guildId).roles.get(config.fanRole)
+	let role = bot.guilds.resolve(config.guildId).roles.cache.get(config.fanRole)
 	let User = db.model('User', userSchema)
 	User.collection.drop((err,res)=>{
 		if (err) msg.channel.send(`Drop Users error: ${err}`)
@@ -265,7 +265,7 @@ function showTop(msg, bot, db) {
 		if (err) msg.channel.send(`Find Users error: ${err}`)
 		else {
 			var str = `**[ 排行榜 ]** 頁 ${page}/${Math.ceil(docs.length/10)}\n`
-			let guild = bot.guilds.get(config.guildId)
+			let guild = bot.guilds.resolve(config.guildId)
 			let start = (page - 1) * 10 + 0
 			docs.sort((a,b)=>(b.exp - a.exp))
 			//set rank
@@ -282,7 +282,7 @@ function showTop(msg, bot, db) {
 			let sliced = docs.slice(start,start + 10)
 			if (sliced.length) {
 				for (e of sliced) {
-					let member = guild.members.get(e.userId)
+					let member = guild.members.cache.get(e.userId)
 					let substr = `${e.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}`
 					substr += `**${e.rank}**   `
 					substr += `[ **LV ${level(e.exp)}** ]  `
@@ -290,7 +290,7 @@ function showTop(msg, bot, db) {
 						substr += `${member.nickname ? member.nickname : member.user.username}`
 					else {
 						try {
-							let user = await bot.fetchUser(e.userId)
+							let user = await bot.users.fetch(e.userId)
 							substr += `${user.username} *(已離開)*`
 						} catch {
 							substr += '*(帳號已刪除)*'

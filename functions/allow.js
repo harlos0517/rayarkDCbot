@@ -11,12 +11,12 @@ function allow(msg, bot, db) {
 		else if (member.roles.has(config.fanRole))
 			msg.channel.send(`${member} 已經是雷亞粉絲。`, msg.channel)
 		else {
-			member.addRole(config.fanRole)
+			member.roles.add(config.fanRole)
 			let lang = msg.content.split(' ')[1]
 			let channel = config.generalChannel
 			config.languageRoles.forEach(e=>{
 				if (lang === e.name) {
-					member.addRole(e.role)
+					member.roles.add(e.role)
 					channel = e.channel
 				}
 			})

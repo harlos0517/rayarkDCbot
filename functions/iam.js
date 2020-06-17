@@ -4,10 +4,10 @@ const config = require('../config.js')
 function setRole(msg, role, tog) {
 	let member = msg.member
 	if (tog) {
-		member.addRole(role.role)
+		member.roles.add(role.role)
 		msg.channel.send(`${member} 已訂閱 ${role.name}。`)
 	} else {
-		member.removeRole(role.role)
+		member.roles.remove(role.role)
 		msg.channel.send(`${member} 已取消訂閱 ${role.name}。`)
 	}
 }

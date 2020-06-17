@@ -10,7 +10,7 @@ const config = require('./config.js')
 const bot = new Discord.Client()
 
 // connect to mongoDB when bot is ready
-bot.on('ready', () => {
+bot.once('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`)
 	mongoose.set('useNewUrlParser', true)
 	mongoose.set('useUnifiedTopology', true)
@@ -23,7 +23,7 @@ bot.on('ready', () => {
 
 	util.debugSend(`Puggi wakes up!`, bot)
 	// fetch all Members!
-	bot.guilds.get(config.guildId).fetchMembers()
+	bot.guilds.resolve(config.guildId).members.fetch()
 })
 
 require('./debug.js')(bot)

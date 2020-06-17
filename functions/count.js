@@ -9,7 +9,7 @@ async function totalMessages(channel) {
 
 	while (true) {
 		if (lastId) options.before = lastId
-		const messages = await channel.fetchMessages(options)
+		const messages = await channel.messages.fetch(options)
 		total += messages.size
 		lastId = messages.last().id
 		if (messages.size < max) break

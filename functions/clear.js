@@ -10,7 +10,7 @@ function clear(msg, bot) {
 			let options = { limit: max, before: msg.id }
 
 			while (true) {
-				const messages = await channel.fetchMessages(options)
+				const messages = await channel.messages.fetch(options)
 				var size = messages.size
 				await ch.bulkDelete(messages)
 				total += size
