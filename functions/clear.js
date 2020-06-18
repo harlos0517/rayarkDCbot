@@ -2,7 +2,7 @@ const util = require('../util.js')
 const config = require('../config.js')
 
 function clearInterval(chId, bot) {
-	let ch = bot.channels.cache.get(chId)
+	let ch = bot.channels.fetch(chId)
 	bot.setInterval(()=>{
 		util.tryCatch(async ()=>{
 			let time = new Date()
@@ -26,9 +26,9 @@ function clear(ch, bot) {
 }
 
 module.exports = function(bot) {
-	bot.once('ready', () => {
-		clearInterval(config.dbgChannel, bot)
-	})
+	// bot.once('ready', () => {
+	// 	clearInterval(config.dbgChannel, bot)
+	// })
 
 	bot.on('message', msg => {
 		util.tryCatch(()=>{

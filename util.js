@@ -32,8 +32,8 @@ util.cmd = function(msg, cmd) {
 }
 
 util.debugSend = function(err, bot) {
-	if (bot && bot.channels && bot.channels.cache.get && bot.channels.cache.get(config.dbgChannel))
-		bot.channels.cache.get(config.dbgChannel).send(err)
+	if (bot && bot.channels && bot.channels.fetch && bot.channels.fetch(config.dbgChannel))
+		bot.channels.fetch(config.dbgChannel).then(ch=>ch.send(err))
 	console.log(err)
 }
 
@@ -44,8 +44,8 @@ util.tryCatch = function(func, bot, info) {
 		let errorMsg = '[ ERROR ] '
 		errorMsg += (typeof(err) === 'string') ? err : `${err.name}: ${err.message}${info?`\n${info}`:''}`
 		console.log(errorMsg)
-		if (bot && bot.channels && bot.channels.cache.get && bot.channels.cache.get(config.dbgChannel))
-		bot.channels.cache.get(config.dbgChannel).send(errorMsg)
+		if (bot && bot.channels && bot.channels.fetch && bot.channels.fetch(config.dbgChannel))
+		bot.channels.fetch(config.dbgChannel).then(ch=>ch.send(errorMsg))
 	}
 }
 

@@ -81,11 +81,11 @@ function fetchPage(fanpage, bot) {
 					.setImage(image)
 					.setTimestamp(utime*1000)
 				if (!DEBUG) {
-					bot.channels.cache.get(fanpage.channel)
-						.send(`${bot.guilds.resolve(config.guildId).roles.cache.get(fanpage.pinRole)}`,
+					bot.channels.fetch(fanpage.channel)
+						.send(`${bot.guilds.resolve(config.guildId).roles.fetch(fanpage.pinRole)}`,
 							{embed: embed})
 				} else {
-					bot.channels.cache.get(config.dbgChannel)
+					bot.channels.fetch(config.dbgChannel)
 						.send('\@TEST', {embed: embed})
 				}
 			}

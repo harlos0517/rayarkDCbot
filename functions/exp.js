@@ -118,7 +118,7 @@ function listChannelExp(msg, bot, db) {
 		else {
 			var str = '**[ 各頻道經驗值比率列表 ]**\n'
 			docs.forEach((e,i,a)=>{
-				str += `${bot.channels.cache.get(e.channelId)} : ${e.expRatio}\n`
+				str += `${bot.channels.fetch(e.channelId)} : ${e.expRatio}\n`
 			})
 			msg.channel.send(str)
 		}
@@ -155,7 +155,7 @@ function initExp(msg, bot, db) {
 
 	// Fans
 	let incr = config.fanRoleExp
-	let role = bot.guilds.resolve(config.guildId).roles.cache.get(config.fanRole)
+	let role = bot.guilds.resolve(config.guildId).roles.fetch(config.fanRole)
 	msg.channel.send(`Adding ${incr} EXP to all ${role.name}.`)
 	role.members.tap(member=>{
 		if (member.user.bot) return
@@ -168,7 +168,7 @@ function initExp(msg, bot, db) {
 
 	// Promoters
 	let incr2 = 6000
-	let role2 = bot.guilds.resolve(config.guildId).roles.cache.get('684789134832697347')
+	let role2 = bot.guilds.resolve(config.guildId).roles.fetch('684789134832697347')
 	msg.channel.send(`Adding ${incr2} EXP to all ${role2.name}.`)
 	role2.members.tap(member=>{
 		if (member.user.bot) return
@@ -206,7 +206,7 @@ function initExp(msg, bot, db) {
 		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
 			docs.forEach((e,i,a)=>{
-				let channel = bot.channels.cache.get(e.channelId)
+				let channel = bot.channels.fetch(e.channelId)
 				addHistoryExp(channel, e.expRatio, db).then(total=>{
 					msg.channel.send(`History exp added for channel ${channel}`)
 				})
@@ -216,7 +216,7 @@ function initExp(msg, bot, db) {
 }
 
 function initReset(msg, bot, db) {
-	let role = bot.guilds.resolve(config.guildId).roles.cache.get(config.fanRole)
+	let role = bot.guilds.resolve(config.guildId).roles.fetch(config.fanRole)
 	let User = db.model('User', userSchema)
 	User.collection.drop((err,res)=>{
 		if (err) msg.channel.send(`Drop Users error: ${err}`)
@@ -282,7 +282,7 @@ function showTop(msg, bot, db) {
 			let sliced = docs.slice(start,start + 10)
 			if (sliced.length) {
 				for (e of sliced) {
-					let member = guild.members.cache.get(e.userId)
+					let member = guild.members.fetch(e.userId)
 					let substr = `${e.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}`
 					substr += `**${e.rank}**   `
 					substr += `[ **LV ${level(e.exp)}** ]  `

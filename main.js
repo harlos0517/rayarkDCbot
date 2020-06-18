@@ -21,7 +21,7 @@ bot.once('ready', () => {
 		else console.log('Connected to MongoDB successfully.')
 	})
 
-	util.debugSend(`Puggi wakes up!`, bot)
+	util.debugSend(`Puggi wakes up! 普吉起床了！`, bot)
 	// fetch all Members!
 	bot.guilds.resolve(config.guildId).members.fetch()
 })
