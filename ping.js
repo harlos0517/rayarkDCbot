@@ -89,7 +89,7 @@ function ping(msg, bot) {
 		let tar = util.random(ans2)
 		tar = util.random([ans1, ans1, ans1, tar])
 		let str = tar['EN']
-		config.langgit uageRoles.forEach(role=>{
+		config.languageRoles.forEach(role=>{
 			if (msg.member.roles.cache.has(role.role)) str = tar[role.name] || str
 		})
 		msg.channel.send(str)
