@@ -26,6 +26,10 @@ bot.once('ready', () => {
 	bot.guilds.resolve(config.guildId).members.fetch()
 })
 
+bot.on('guildMemberAdd', member=>{
+	bot.guilds.resolve(config.guildId).members.fetch()
+})
+
 require('./debug.js')(bot)
 require('./ping.js')(bot)
 

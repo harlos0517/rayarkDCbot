@@ -5,7 +5,7 @@ const config = require('../config.js')
 
 function setChannel(bot, ch, cat) {
 	let topic = ``
-	let channel = bot.channels.get(ch.id)
+	let channel = bot.channels.cache.get(ch.id)
 	channel.setName(ch.name)
 	let str = `\t:small_orange_diamond: `
 	str += (channel.type==='voice') ? `**:sound:${ch.name}**` : `**${channel}**`
@@ -39,7 +39,7 @@ function setChannel(bot, ch, cat) {
 }
 
 function channelSetup(bot) {
-	let guide = bot.channels.get('707889663410569236')
+	let guide = bot.channels.cache.get('707889663410569236')
 	let channels = require('./channels.json')
 	let str = '**[ 頻道導覽 ]**\n'
 	guide.send(str)
@@ -48,7 +48,7 @@ function channelSetup(bot) {
 		if (cat.type !== 'category') guide.send(setChannel(bot, cat, cat))
 		else {
 			let str = `:white_small_square: **${cat.name}**\n`
-			let category = bot.channels.get(cat.id)
+			let category = bot.channels.cache.get(cat.id)
 			category.setName(cat.name)
 			cat.channels.forEach((ch)=>{
 				str += setChannel(bot, ch, cat)

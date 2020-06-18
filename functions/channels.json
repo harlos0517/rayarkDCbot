@@ -324,7 +324,7 @@
 			"JP": "寄付レコード"
 		}
 	},{
-		"id": "684259321403801630", "type": "text", "name": "除錯-debug",
+		"id": "723237787955888210", "type": "text", "name": "除錯-debug",
 		"topic": {
 			"ZH": "機器人除錯",
 			"EN": "Bot debugging",

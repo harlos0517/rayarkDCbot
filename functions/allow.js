@@ -27,7 +27,7 @@ function allow(msg, bot, db) {
 				if (err) msg.channel.send(`Update Users error: ${err}`)
 				else msg.channel.send(`${member} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
 			})
-			bot.channels.get(channel).send(`Congrats! ${member} has become a Rayark Fan!`)
+			bot.channels.cache.get(channel).send(`Congrats! ${member} has become a Rayark Fan!`)
 		}
 	})
 }

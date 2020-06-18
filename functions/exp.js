@@ -118,7 +118,7 @@ function listChannelExp(msg, bot, db) {
 		else {
 			var str = '**[ 各頻道經驗值比率列表 ]**\n'
 			docs.forEach((e,i,a)=>{
-				str += `${bot.channels.get(e.channelId)} : ${e.expRatio}\n`
+				str += `${bot.channels.cache.get(e.channelId)} : ${e.expRatio}\n`
 			})
 			msg.channel.send(str)
 		}
@@ -206,7 +206,7 @@ function initExp(msg, bot, db) {
 		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
 			docs.forEach((e,i,a)=>{
-				let channel = bot.channels.get(e.channelId)
+				let channel = bot.channels.cache.get(e.channelId)
 				addHistoryExp(channel, e.expRatio, db).then(total=>{
 					msg.channel.send(`History exp added for channel ${channel}`)
 				})
