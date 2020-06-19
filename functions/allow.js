@@ -6,7 +6,8 @@ const userSchema = require('../schemas/user.js')
 function allow(msg, bot, db) {
 	if (!msg.mentions.members.size) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}allow [member]\``)
-	} else msg.mentions.members.tap(member=>{
+	} else msg.mentions.members.each(member=>{
+		console.log(member, member.user)
 		if (member.user.bot) msg.channel.send(`不能接受機器人 (${member}) 。`, msg.channel)
 		else if (member.roles.cache.has(config.fanRole))
 			msg.channel.send(`${member} 已經是雷亞粉絲。`, msg.channel)
