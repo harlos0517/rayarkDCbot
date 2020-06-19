@@ -29,7 +29,7 @@ function fetchPage(fanpage, bot) {
 		url: `${root}/${fanpage.id}/posts`,
 		headers: { 'User-Agent': 'request' }
 	}, (err, res, body)=>{
-		util.tryCatch(()=>{
+		util.tryCatch(async ()=>{
 			const $ = cheerio.load(body)
 			let posts = $(selector.post)
 			let i = 0
@@ -81,12 +81,12 @@ function fetchPage(fanpage, bot) {
 					.setImage(image)
 					.setTimestamp(utime*1000)
 				if (!DEBUG) {
-					bot.channels.fetch(fanpage.channel)
-						.send(`${bot.guilds.resolve(config.guildId).roles.fetch(fanpage.pinRole)}`,
-							{embed: embed})
+					let ch = await bot.channels.fetch(fanpage.channel)
+					ch.send(`${await bot.guilds.resolve(config.guildId).roles.fetch(fanpage.pinRole)}`,
+						{embed: embed})
 				} else {
-					bot.channels.fetch(config.dbgChannel)
-						.send('\@TEST', {embed: embed})
+					let ch = await bot.channels.fetch(config.dbgChannel)
+					ch.send('\@TEST', {embed: embed})
 				}
 			}
 			fanpage.updateTime = utime

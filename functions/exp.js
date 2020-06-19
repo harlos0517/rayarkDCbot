@@ -113,13 +113,13 @@ function setChannelExp(msg, bot, db) {
 
 function listChannelExp(msg, bot, db) {
 	let Channel = db.model('Channel', channelSchema)
-	Channel.find((err, docs)=>{
+	Channel.find(async (err, docs)=>{
 		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
 			var str = '**[ 各頻道經驗值比率列表 ]**\n'
-			docs.forEach((e,i,a)=>{
-				str += `${bot.channels.fetch(e.channelId)} : ${e.expRatio}\n`
-			})
+			for (e of docs) {
+				str += `${await bot.channels.fetch(e.channelId)} : ${e.expRatio}\n`
+			}
 			msg.channel.send(str)
 		}
 	})
@@ -202,15 +202,15 @@ function initExp(msg, bot, db) {
 
 	// Search for history messages
 	let Channel = db.model('Channel', channelSchema)
-	Channel.find((err, docs)=>{
+	Channel.find(async (err, docs)=>{
 		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
-			docs.forEach((e,i,a)=>{
-				let channel = bot.channels.fetch(e.channelId)
+			for (e of docs) {
+				let channel = await bot.channels.fetch(e.channelId)
 				addHistoryExp(channel, e.expRatio, db).then(total=>{
 					msg.channel.send(`History exp added for channel ${channel}`)
 				})
-			})
+			}
 		}
 	})
 }
@@ -282,7 +282,7 @@ function showTop(msg, bot, db) {
 			let sliced = docs.slice(start,start + 10)
 			if (sliced.length) {
 				for (e of sliced) {
-					let member = guild.members.fetch(e.userId)
+					let member = await guild.members.fetch(e.userId).catch(()=>{})
 					let substr = `${e.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}`
 					substr += `**${e.rank}**   `
 					substr += `[ **LV ${level(e.exp)}** ]  `

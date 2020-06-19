@@ -3,9 +3,9 @@ const fs = require('fs')
 
 const config = require('../config.js')
 
-function setChannel(bot, ch, cat) {
+async function setChannel(bot, ch) {
 	let topic = ``
-	let channel = bot.channels.fetch(ch.id)
+	let channel = await bot.channels.fetch(ch.id)
 	channel.setName(ch.name)
 	let str = `\t:small_orange_diamond: `
 	str += (channel.type==='voice') ? `**:sound:${ch.name}**` : `**${channel}**`
@@ -39,21 +39,22 @@ function setChannel(bot, ch, cat) {
 }
 
 function channelSetup(bot) {
-	let guide = bot.channels.fetch('707889663410569236')
-	let channels = require('./channels.json')
-	let str = '**[ 頻道導覽 ]**\n'
-	guide.send(str)
-
-	channels.forEach(cat=>{
-		if (cat.type !== 'category') guide.send(setChannel(bot, cat, cat))
-		else {
-			let str = `:white_small_square: **${cat.name}**\n`
-			let category = bot.channels.fetch(cat.id)
-			category.setName(cat.name)
-			cat.channels.forEach((ch)=>{
-				str += setChannel(bot, ch, cat)
-			})
-			guide.send(str)
+	bot.channels.fetch('707889663410569236').then(async guide=>{
+		let channels = require('./channels.json')
+		let str = '**[ 頻道導覽 ]**\n'
+		guide.send(str)
+	
+		for (let cat of channels) {
+			if (cat.type !== 'category')
+				guide.send(await setChannel(bot, cat))
+			else {
+				let str = `:white_small_square: **${cat.name}**\n`
+				let category = await bot.channels.fetch(cat.id)
+				category.setName(cat.name)
+				for (let ch of cat.channels)
+					str += await setChannel(bot, ch)
+				guide.send(str)
+			}
 		}
 	})
 }

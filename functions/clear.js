@@ -1,21 +1,6 @@
 const util = require('../util.js')
 const config = require('../config.js')
 
-function clearInterval(chId, bot) {
-	let ch = bot.channels.fetch(chId)
-	bot.setInterval(()=>{
-		util.tryCatch(async ()=>{
-			let time = new Date()
-			let messages
-			do {
-				messages = await ch.messages.fetch({ limit: 20 })
-				filtered = messages.filter(message=>message.createdTimestamp < time.getTime() - 604800000)
-				ch.bulkDelete(filtered)
-			} while (filtered.size)
-		}, bot)
-	}, 3600000);
-}
-
 function clear(ch, bot) {
 	ch.messages.fetch({ limit: 20 }).then(messages=>{
 		util.tryCatch(()=>{
@@ -26,10 +11,6 @@ function clear(ch, bot) {
 }
 
 module.exports = function(bot) {
-	// bot.once('ready', () => {
-	// 	clearInterval(config.dbgChannel, bot)
-	// })
-
 	bot.on('message', msg => {
 		util.tryCatch(()=>{
 			// Ignore bot messages.
