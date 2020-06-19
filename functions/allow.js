@@ -8,7 +8,7 @@ function allow(msg, bot, db) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}allow [member]\``)
 	} else msg.mentions.members.tap(member=>{
 		if (member.user.bot) msg.channel.send(`不能接受機器人 (${member}) 。`, msg.channel)
-		else if (member.roles.has(config.fanRole))
+		else if (member.roles.cache.has(config.fanRole))
 			msg.channel.send(`${member} 已經是雷亞粉絲。`, msg.channel)
 		else {
 			member.roles.add(config.fanRole)

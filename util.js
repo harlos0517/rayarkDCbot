@@ -50,7 +50,7 @@ util.tryCatch = function(func, bot, info) {
 }
 
 util.checkAdmin = function(msg) {
-	if (!msg.member.roles.has(config.adminRole)) {
+	if (!msg.member.roles.cache.has(config.adminRole)) {
 		msg.channel.send('此功能僅限管理員使用。')
 		return false
 	} else return true

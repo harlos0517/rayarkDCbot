@@ -80,7 +80,7 @@ const ans2 = [{
 	'JP': 'ニャハハハハハハハハ！'
 },{
 	'ZH': 'PUGWRRRRRYYYYYYYYY！',
-	'EN': 'PUGWRRRRRYYYYYYYYY！',
+	'EN': 'PUGWRRRRRYYYYYYYYY!',
 	'JP': 'プギWRRRRRYYYYYYYYY！'
 }]
 
