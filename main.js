@@ -9,6 +9,20 @@ const config = require('./config.js')
 
 const bot = new Discord.Client()
 
+process.on('unhandledRejection', err=>{
+	if (err.name === 'DiscordAPIError') util.debugSend('error',
+		`${err.name} ${err.method} ${err.path}\n${err.code} - ${err.message}`, bot)
+	else util.debugSend('error', err, bot)
+})
+
+process.on('uncaughtException', err => {
+  util.debugSend('error', err, bot)
+})
+
+process.on('warning', warning=>{
+  util.debugSend('warn', warning, bot)
+})
+
 // connect to mongoDB when bot is ready
 bot.once('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`)
@@ -17,23 +31,17 @@ bot.once('ready', () => {
 	mongoose.set('useFindAndModify', false)
 	mongoose.set('useCreateIndex', true)
 	mongoose.connect(process.env.DBURL, (err)=>{
-		if (err) console.error(`MongoDB connection error: ${err}`)
-		else console.log('Connected to MongoDB successfully.')
+		if (err) util.debugSend('DB-error', `MongoDB connection error: ${err}`, bot)
+		else util.debugSend('DB-info', 'Connected to MongoDB successfully.', bot)
 	})
 
-	util.debugSend(`Puggi wakes up! 普吉起床了！`, bot)
-	// fetch all Members!
-	bot.guilds.resolve(config.guildId).members.fetch()
-})
-
-bot.on('guildMemberAdd', member=>{
-	bot.guilds.resolve(config.guildId).members.fetch()
+	util.debugSend('info', `普吉起床了！ Puggi wakes up!`, bot)
 })
 
 require('./debug.js')(bot)
-require('./ping.js')(bot)
 
-require('./functions/allow.js')(bot, mongoose)
+require('./functions/ping.js')(bot)
+require('./functions/setrole.js')(bot, mongoose)
 require('./functions/count.js')(bot)
 require('./functions/clear.js')(bot)
 require('./functions/exp.js')(bot, mongoose)

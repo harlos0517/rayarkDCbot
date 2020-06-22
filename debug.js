@@ -1,5 +1,5 @@
 const util = require('./util.js')
-const config = require('./config.js')
+
 const events = [
 	'channelCreate',
 	'channelDelete',
@@ -56,13 +56,15 @@ function debugLog(event, str) {
 }
 
 function debug(bot) {
-	util.tryCatch(()=>{
-		events.forEach(event=>{
-			if (event === 'debug') {
-				bot.on(event, (info)=>{ debugLog('debug', info) })
-			} else bot.on(event, ()=>{ debugLog(event) })
-		})
-	}, bot)
+	events.forEach(event=>{
+		if (event === 'debug') {
+			bot.on(event, info=>{ debugLog('debug', info) })
+		} else if (event === 'error') {
+			bot.on(event, ()=>{
+				util.debugSend('DC-error', `${err.name}: ${err.message}`, bot)
+			})
+		} else bot.on(event, ()=>{ debugLog(event) })
+	})
 }
 
 module.exports = debug

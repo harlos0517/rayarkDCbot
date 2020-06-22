@@ -1,5 +1,6 @@
-const util = require('./util.js')
-const config = require('./config.js')
+const util = require('../util.js')
+const config = require('../config.js')
+
 const rcv = /(puggi)|(普吉)|(噗噗)|(pupu)|(プギ)|(ププ)/
 const ans1 = {
 	'ZH': '普吉',
@@ -85,25 +86,20 @@ const ans2 = [{
 }]
 
 function ping(msg, bot) {
-	if (rcv.test(msg.content.toLowerCase()) || msg.mentions.members.has(bot.user.id)) {
+	if (rcv.test(msg.content.toLowerCase()) ||
+	    msg.mentions.members.has(bot.user.id)) {
 		let tar = util.random(ans2)
 		tar = util.random([ans1, ans1, ans1, tar])
-		let str = tar['EN']
-		config.languageRoles.forEach(role=>{
-			if (msg.member.roles.cache.has(role.role)) str = tar[role.name] || str
-		})
-		msg.channel.send(str)
+		msg.channel.send(util.getLangStr(msg, tar))
+			.catch(err=>util.catch(`(ping) ` + err, msg.channel))
 	}
 }
 
 module.exports = function(bot) {
 	bot.on('message', msg => {
-		util.tryCatch(()=>{
-			// Ignore bot messages.
-			if (msg.author.bot) return
-			// use is instead of checkChannel to avoid report
-			if (util.is(msg.channel.id, config.availChannels))
-				ping(msg, bot)
-		}, bot)
+		if (!util.checkMember(msg)) return
+		// use is instead of checkChannel to avoid report
+		if ([config.channels.spam, config.channels.cmd, config.channels.debug]
+			.includes(msg.channel.id)) ping(msg, bot)
 	})
 }

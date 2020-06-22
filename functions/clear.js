@@ -1,23 +1,29 @@
 const util = require('../util.js')
 const config = require('../config.js')
 
-function clear(ch, bot) {
-	ch.messages.fetch({ limit: 20 }).then(messages=>{
-		util.tryCatch(()=>{
-			try { ch.bulkDelete(messages) }
-			catch { messages.each(message=>message.delete()) }
-		}, bot)
+function clear(ch, num, bot) {
+	if (isNaN(num)) num = 20
+	if (num < 0) num = 5
+	if (num > 100) num = 100
+	ch.messages.fetch({ limit: num }).then(messages=>{
+		ch.bulkDelete(messages).catch(async err=>{
+			for (message of messages.array()) {
+				message.delete()
+				await util.sleep(2000)
+			}
+		})
 	})
 }
 
 module.exports = function(bot) {
 	bot.on('message', msg => {
-		util.tryCatch(()=>{
-			// Ignore bot messages.
-			if (msg.author.bot) return
-			// clear, only for debug channel
-			if (util.is(msg.channel.id, [config.dbgChannel, '707889663410569236']))
-				if (util.cmd(msg, 'clear')) clear(msg.channel, bot)
-		}, bot)
+		// Ignore bot messages.
+		if (msg.author.bot) return
+		// clear, only for debug channel
+		if ([config.dbgChannel, '707889663410569236'].includes(msg.channel.id)) {
+			let cmd = util.cmd(msg)
+			if (!cmd) return
+			if (cmd[0] === 'clear') clear(msg.channel, cmd[1], bot)
+		}
 	})
 }

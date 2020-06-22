@@ -2,63 +2,65 @@ const config = require('./config.js')
 
 var util = {}
 
-util.is = function(target, arr) {
-	let flag = false
-	arr.forEach((e,i,a)=>{
-		if (target === e) flag = true
-	})
-	return flag
-}
-
-util.not = function(target, arr) {
-	let flag = true
-	arr.forEach((e,i,a)=>{
-		if (target === e) flag = false
-	})
-	return flag
-}
-
 util.random = function(arr) {
 	let i = Math.floor(Math.random() * arr.length)
 	return arr[i]
 }
 
-util.cmd = function(msg, cmd) {
-	let cmd2 = config.prefix+cmd+' '
-	let cmd3 = config.prefix+cmd+'\n'
-	return (msg.content === config.prefix+cmd) ||
-					(msg.content.slice(0, cmd2.length) === cmd2) ||
-					(msg.content.slice(0, cmd3.length) === cmd3)
+util.sleep = async function(ms) {
+	await new Promise(resolve=>setTimeout(resolve, ms))
 }
 
-util.debugSend = function(err, bot) {
-	if (bot && bot.channels && bot.channels.fetch && bot.channels.fetch(config.dbgChannel))
-		bot.channels.fetch(config.dbgChannel).then(ch=>ch.send(err))
-	console.log(err)
+util.cmd = function(msg) {
+	let str = msg.content
+	if (!str || str.charAt(0) !== config.prefix) return undefined
+	return str.slice(1).split('\n')[0].split(/ +/)
 }
 
-util.tryCatch = function(func, bot, info) {
-	try {
-		func()
-	} catch (err) {
-		let errorMsg = '[ ERROR ] '
-		errorMsg += (typeof(err) === 'string') ? err : `${err.name}: ${err.message}${info?`\n${info}`:''}`
-		console.log(errorMsg)
-		if (bot && bot.channels && bot.channels.fetch && bot.channels.fetch(config.dbgChannel))
-		bot.channels.fetch(config.dbgChannel).then(ch=>ch.send(errorMsg))
-	}
+util.getLangStr = function(msg, strs) {
+	roles = msg.member.roles.cache
+	for (l of config.lang.reverse())
+		if (roles.has(l.role) && strs[l.name])
+			return strs[l.name]
+	for (l of config.lang) if (strs[l.name]) return strs[l.name]
+}
+
+util.debugSend = function(name, msg, botOrCh) {
+	let str = `< ${name.toUpperCase()} > ${msg}`
+	console.log(str)
+	if (botOrCh && botOrCh.send) botOrCh.send(str)
+		.catch(err=>console.log(`Cannot send debug message: ` + err))
+	else if (botOrCh && botOrCh.channels && botOrCh.channels.fetch)
+		botOrCh.channels.fetch(config.channels.debug).then(ch=>{
+			ch.send(str).catch(err=>console.log(`Cannot send debug message: ` + err))
+		}).catch(err=>console.log(`Cannot send debug message: ` + err))
+	else console.log(`Cannot send debug message: argument error`)
+}
+
+util.catch = function(err, botOrCh) {
+	msg = (typeof(err) === 'string') ? err : `${err.name}: ${err.message}`
+	util.debugSend('error', msg, botOrCh)
 }
 
 util.checkAdmin = function(msg) {
-	if (!msg.member.roles.cache.has(config.adminRole)) {
-		msg.channel.send('此功能僅限管理員使用。')
+	if (!msg.member.roles.cache.has(config.expRoles.find(r=>r.name==="Admin").id)) {
+		strs = {
+			'EN': 'Only Admins can use this.',
+			'ZH': '此功能僅限管理員使用。'
+		}
+		msg.channel.send(util.getLangStr(msg, strs))
 		return false
 	} else return true
 }
 
 util.checkChannel = function(msg) {
-	if (!this.is(msg.channel.id, config.availChannels)) {
-		msg.channel.send('此功能不可在此頻道使用。')
+	chs = [config.channels.spam, config.channels.cmd, config.channels.debug]
+	if (!chs.includes(msg.channel.id)) {
+		strs = {
+			'EN': 'You cannot use this in this channel.',
+			'ZH': '此功能不可在此頻道使用。'
+		}
+		msg.channel.send(util.getLangStr(msg, strs))
 		return false
 	} else return true
 }

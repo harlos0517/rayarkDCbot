@@ -43,7 +43,6 @@ function channelSetup(bot) {
 		let channels = require('./channels.json')
 		let str = '**[ 頻道導覽 ]**\n'
 		guide.send(str)
-	
 		for (let cat of channels) {
 			if (cat.type !== 'category')
 				guide.send(await setChannel(bot, cat))
@@ -55,16 +54,17 @@ function channelSetup(bot) {
 					str += await setChannel(bot, ch)
 				guide.send(str)
 			}
+			await util.sleep(2000)
 		}
 	})
 }
 
 module.exports = function(bot) {
 	bot.on('message', msg => {
-		util.tryCatch(()=>{
-			if (util.cmd(msg, 'channel setup'))
-				if (util.checkChannel(msg))
-					channelSetup(bot)
-		}, bot)
+		let cmd = util.cmd(msg)
+		if (!cmd) return
+		if (cmd[0] === 'channel' && cmd[1] === 'setup')
+			if (util.checkChannel(msg))
+				channelSetup(bot)
 	})
 }

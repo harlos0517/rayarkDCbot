@@ -1,30 +1,34 @@
 const util = require('../util.js')
 const config = require('../config.js')
 
-function setRole(msg, role, tog) {
+function setRole(msg, args, tog) {
 	let member = msg.member
-	if (tog) {
-		member.roles.add(role.role)
-		msg.channel.send(`${member} 已訂閱 ${role.name}。`)
-	} else {
-		member.roles.remove(role.role)
-		msg.channel.send(`${member} 已取消訂閱 ${role.name}。`)
-	}
+	args.forEach(arg=>{
+		let role = config.userRoles.find(role=>role.abbr === arg)
+		if (!role) 
+			return msg.channel.send(`Role ${arg} not found.`)
+		if (tog) {
+			member.roles.add(role.id)
+				.catch(err=>util.catch(`(iam) ` + err, msg.channel))
+			msg.channel.send(`${member} added ${role.name} role.`)
+		} else {
+			member.roles.remove(role.id)
+				.catch(err=>util.catch(`(iamnot) ` + err, msg.channel))
+			msg.channel.send(`${member} removed ${role.name} role.`)
+		}
+	})
 }
 
 module.exports = function(bot, db) {
 	bot.on('message', msg => {
-		util.tryCatch(()=>{
-			// Ignore bot messages.
-			if (msg.author.bot) return
-			config.iamRoles.forEach(e=>{
-				if (util.cmd(msg, `iam ${e.abbr}`))
-					if (util.checkChannel(msg))
-						setRole(msg, e, true )
-				if (util.cmd(msg, `iamnot ${e.abbr}`))
-					if (util.checkChannel(msg))
-						setRole(msg, e, false)
-			})
-		}, bot)
+		if (!util.checkMember(msg)) return
+		let cmd = util.cmd(msg)
+		if (!cmd) return
+		if (cmd[0] === 'iam')
+			if (util.checkChannel(msg))
+				setRole(msg, cmd.slice(1), true )
+		if (cmd[0] === 'iamnot')
+			if (util.checkChannel(msg))
+				setRole(msg, cmd.slice(1), false)
 	})
 }
