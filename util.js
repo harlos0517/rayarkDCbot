@@ -33,6 +33,7 @@ util.debugSend = async function(name, msg, botOrCh) {
 	else if (botOrCh && botOrCh.channels && botOrCh.channels.fetch) {
 		let ch = await botOrCh.channels.fetch(config.channels.debug)
 			.catch(err=>console.log(`Cannot send debug message: ` + err))
+		if (!ch || !ch.send) return
 		await ch.send(str).catch(err=>console.log(`Cannot send debug message: ` + err))
 	} else console.log(`Cannot send debug message: argument error`)
 }
