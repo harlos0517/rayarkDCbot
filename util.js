@@ -25,16 +25,16 @@ util.getLangStr = function(msg, strs) {
 	for (l of config.lang) if (strs[l.name]) return strs[l.name]
 }
 
-util.debugSend = function(name, msg, botOrCh) {
+util.debugSend = async function(name, msg, botOrCh) {
 	let str = `< ${name.toUpperCase()} > ${msg}`
 	console.log(str)
-	if (botOrCh && botOrCh.send) botOrCh.send(str)
+	if (botOrCh && botOrCh.send) await botOrCh.send(str)
 		.catch(err=>console.log(`Cannot send debug message: ` + err))
-	else if (botOrCh && botOrCh.channels && botOrCh.channels.fetch)
-		botOrCh.channels.fetch(config.channels.debug).then(ch=>{
-			ch.send(str).catch(err=>console.log(`Cannot send debug message: ` + err))
-		}).catch(err=>console.log(`Cannot send debug message: ` + err))
-	else console.log(`Cannot send debug message: argument error`)
+	else if (botOrCh && botOrCh.channels && botOrCh.channels.fetch) {
+		let ch = await botOrCh.channels.fetch(config.channels.debug)
+			.catch(err=>console.log(`Cannot send debug message: ` + err))
+		await ch.send(str).catch(err=>console.log(`Cannot send debug message: ` + err))
+	} else console.log(`Cannot send debug message: argument error`)
 }
 
 util.catch = function(err, botOrCh) {

@@ -23,6 +23,16 @@ process.on('warning', warning=>{
   util.debugSend('warn', warning, bot)
 })
 
+process.on('SIGINT', async ()=>{
+	await util.debugSend('info', `普吉晚安！ Puggi good night!`, bot)
+	process.exit()
+})
+
+process.on('SIGTERM', async ()=>{
+	await util.debugSend('info', `普吉晚安！ Puggi good night!`, bot)
+	process.exit()
+})
+
 // connect to mongoDB when bot is ready
 bot.once('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`)
@@ -36,6 +46,13 @@ bot.once('ready', () => {
 	})
 
 	util.debugSend('info', `普吉起床了！ Puggi wakes up!`, bot)
+})
+
+bot.on('guildMemberRemove', member=>{
+	channel = bot.guilds.resolve(config.guildId).systemChannelID
+	bot.channels.fetch(channel).then(ch=>{
+		ch.send(`${member} has left ${config.guildName}.`)
+	})
 })
 
 require('./debug.js')(bot)

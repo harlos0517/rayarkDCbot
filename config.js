@@ -1,6 +1,7 @@
 module.exports = {
 	prefix: process.env.NODE_ENV === 'production' ? '!' : '?',
 	guildId: '658648174784937985',
+	guildName: 'Rayark Village',
 	expRate: 3,
 	channels: {
 		spam:  '676067274666410034',
