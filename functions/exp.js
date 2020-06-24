@@ -1,29 +1,38 @@
 const util = require('../util.js')
 const config = require('../config.js')
+const urlRegex = require('url-regex')
 
 const userSchema = require('../schemas/user.js')
 const channelSchema = require('../schemas/channel.js')
+const { Client } = require('discord.js')
+
+const expTable = [
+	    60,    130,    210,    300,    400,    520,    660,    820,   1000,    1200,
+	  1470,   1850,   2350,   2980,   3760,   4690,   5780,   7040,   8480,   10100,
+	 11910,  13910,  16110,  18510,  21120,  23940,  26980,  30230,  33710,   37410,
+	 41340,  45500,  49900,  54540,  59420,  64550,  69920,  75540,  81420,   87550,
+	 93940, 100590, 107510, 114690, 122140, 129860, 137850, 146120, 154660,  163480,
+	172590, 181980, 191650, 201610, 211860, 222400, 233240, 244370, 255800,  267530,
+	279560, 291890, 304520, 317460, 330710, 344270, 358140, 372320, 386810,  401620,
+	416750, 432190, 447960, 464050, 480460, 497200, 514260, 531650, 549370,  567420,
+	585800, 604520, 623570, 642960, 662690, 682750, 703150, 723900, 744990,  766420,
+	788200, 810330, 832810, 855630, 878810, 902340, 926220, 950460, 975050, 1000000
+]
+const expDelta = 25000
 
 function level(exp) {
-	if (exp < 50000)
-		return Math.max(0, Math.floor(exp/5000))
-	else if (exp < 10000000) {
-		let expNeed = 50000
-		for (let lv=11; lv<=100; lv++) {
-			expNeed += Math.round(380*(lv-11)/83.888 + 20) * 500
-			if (exp < expNeed) return lv-1
-		}
-	} else return Math.floor((exp-10000000)/200000) + 100
+	let lv = 0
+	for (expNeeded of expTable)
+		if (exp >= expNeeded) lv++
+	if (lv >= expTable.length)
+		return Math.floor((exp - expTable[expTable.length-1])/expDelta) + expTable.length
+	return lv
 }
 
 function levelExp(level) {
-	let exp = 0
-	for (let i = 0; i < level; i++) {
-		if (i < 10) exp += 5000
-		else if (i < 100) exp += Math.round(380*(i-10)/83.888 + 20) * 500
-		else exp += 200000
-	}
-	return exp
+	if (level <= 0) return 0
+	if (level <= expTable.length) return expTable[level-1]
+	return expTable[expTable.length-1] + (level-expTable.length) * expDelta
 }
 
 function checkLevelup(msg, bot, user, a, b) {
@@ -35,20 +44,16 @@ function addExp(msg, bot, db) {
 	let Channel = db.model('Channel', channelSchema)
 	Channel.findOne({channelId: msg.channel.id}, (err,doc)=>{
 		if (err) util.debugSend('DB-error', `(addExp) Find Channels error: ${err}`, bot)
-		else if (!doc || doc.expRatio <= 0) return
-		else {
-			var incr = msg.content.length * doc.expRatio
-			let User = db.model('User', userSchema)
-			User.findOneAndUpdate({userId: msg.author.id}, {$inc: {exp: incr}},
-				{upsert: true, new: true}, (err,doc)=>{
-				if (err) util.debugSend('DB-error', `(addExp) Update Users error: ${err}`, bot)
-				else {
-					if (msg.channel.id === config.dbgChannel)
-						msg.channel.send(`${msg.author} 經驗值增加了${incr}，目前經驗值為${doc.exp}。`)
-					checkLevelup(msg, bot, msg.author, doc.exp-incr, doc.exp)
-				}
-			})
-		}
+		let incr = doc ? doc.expRatio : config.expRate
+		if (isNaN(incr) || incr <= 0) return
+		let User = db.model('User', userSchema)
+		User.findOneAndUpdate({ userId: msg.author.id }, { $inc: { exp: incr } },
+			{ upsert: true, new: true }, (err,doc)=>{
+			if (err) return util.debugSend('DB-error', `(addExp) Update Users error: ${err}`, bot)
+			if (msg.channel.id === config.channels.debug)
+				msg.channel.send(`${msg.author} has gained ${incr} exp, and has ${doc.exp} exp now.`)
+			checkLevelup(msg, bot, msg.author, doc.exp-incr, doc.exp)
+		})
 	})
 }
 
@@ -58,14 +63,14 @@ function addExpTo(msg, bot, db) {
 	if (!msg.mentions.members.size || isNaN(incr)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is a positive integer.`)
 	} else msg.mentions.members.tap(member=>{
-		if (member.user.bot) msg.channel.send(`不能對機器人 (${member}) 增加經驗值。`)
+		if (member.user.bot) msg.channel.send(`Cannot add exp to bot ${member}.`)
 		else {
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
 				if (err) msg.channel.send(`Update Users error: ${err}`)
 				else {
-					msg.channel.send(`${member} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`)
+					msg.channel.send(`${msg.author} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`)
 					checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
 				}
 			})
@@ -101,7 +106,7 @@ function setChannelExp(msg, bot, db) {
 	var r = Number(words[2])
 	if (!msg.mentions.channels.size || !(r>=0 && r<1000)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp setRatio [ratio] [channels]\` where ratio is a non negative integer less than 1000`)
-	} else msg.mentions.channels.tap(ch => {
+	} else msg.mentions.channels.each(ch => {
 		let Channel = db.model('Channel', channelSchema)
 		Channel.findOneAndUpdate({channelId: ch.id}, {expRatio: r},
 			{upsert: true, new: true}, (err,doc)=>{
@@ -125,23 +130,24 @@ function listChannelExp(msg, bot, db) {
 	})
 }
 
-async function addHistoryExp(orgMsg, channel, ratio, db) {
+async function addHistoryExp(ch, ratio, updates) {
 	let lastId = 0
 	const max = 100
 	let total = 0
 	let options = { limit: max }
-	let User = db.model('User', userSchema)
 
 	while (true) {
 		if (lastId) options.before = lastId
-		const messages = await channel.messages.fetch(options)
+		const messages = await ch.messages.fetch(options)
+		if (!messages.size) break
 		messages.each(msg=>{
-			var incr = msg.content.length * ratio
+			var incr = ratio
 			if (msg.author.bot) return
-			User.findOneAndUpdate({ userId: msg.author.id }, { $inc: { exp: incr } },
-				{ upsert: true, new: true }, err=>{
-				if (err) util.debugSend('DB-error', `(addHistoryExp) Update Users error: ${err}`, orgMsg.channel)
-			})
+			let update = updates.find(user=>user.id === msg.author.id)
+			if (!update) {
+				update = { id: msg.author.id, exp: incr }
+				updates.push(update)
+			} else update.exp += incr
 		})
 		total += messages.size
 		lastId = messages.last().id
@@ -150,49 +156,67 @@ async function addHistoryExp(orgMsg, channel, ratio, db) {
 	return total
 }
 
-function initExp(msg, bot, db) {
-	msg.channel.send(`[ WARNING ]  Use this only after you have reset EXP.`)
-	config.expRoles.forEach(r=>{
-		let incr = r.exp
-		let guild = bot.guilds.resolve(config.guildId)
-		Promise.all([
-			guild.members.fetch(), // get all the members
-			guild.roles.fetch(r.id)
-		]).then(v=>{
-			let role = v[1]
-			msg.channel.send(`Adding ${incr} EXP to all ${r.name}.`)
-			role.members.each(member=>{
-				if (member.user.bot) return
-				let User = db.model('User', userSchema)
-				User.findOneAndUpdate({ userId: member.id }, { $inc: { exp: incr } },
-					{ upsert: true }, err=>{
-					if (err) util.debugSend('DB-error', `(initExp) Update Users error: ${err}`, msg.channel)
-				})
-			})
-		})
-	})
+async function initExp(msg, bot, db) {
+	util.debugSend('warn', `Use this only after you have reset EXP.`, msg.channel)
+	updates = []
+	let guild = bot.guilds.resolve(config.guildId)
+	await guild.members.fetch() // get all the members
 
-	// Search for history messages
+	// role exp
+	for (let r of config.expRoles) {
+		let incr = r.exp
+		let role = await guild.roles.fetch(r.id)
+		util.debugSend('info', `Adding ${incr} EXP to all ${r.name}.`, msg.channel)
+		role.members.each(member=>{
+			if (member.user.bot) return
+			let update = updates.find(user=>user.id === member.id)
+			if (!update) {
+				update = { id: member.id, exp: incr }
+				updates.push(update)
+			} else update.exp += incr
+		})
+	}
+
+	util.debugSend('info', `Searching history messages...`, msg.channel)
+	// history messages
 	let Channel = db.model('Channel', channelSchema)
-	Channel.find((err, docs)=>{
-		if (err) msg.channel.send(`Find Channels error: ${err}`)
-		else {
-			for (e of docs) {
-				let channel = bot.channels.fetch(e.channelId).then(ch)
-				addHistoryExp(msg, channel, e.expRatio, db).then(total=>{
-					msg.channel.send(`History exp added for channel ${channel}`)
-				})
-			}
-		}
-	})
+	for (let ch of guild.channels.cache.array()) {
+		if (ch.type !== 'text'|| !ch.messages) continue
+		let channel = await Channel.findOne({ channelId: ch.id }).exec().catch(err=>{
+			util.debugSend('DB-error', `(addHistoryExp) Find Channels error: ${err}`, msg.channel)
+		})
+		let ratio = (channel && !isNaN(channel.expRatio)) ? channel.expRatio : config.expRate
+		if (!ratio) continue
+		let total = await addHistoryExp(ch, config.expRate, updates)
+		util.debugSend('info', `History exp added for channel ${ch} with ${total} messages.`, msg.channel)
+	}
+	util.debugSend('info', `History messages exp added.`, msg.channel)
+
+	util.debugSend('info', `Updating to Database...`, msg.channel)
+	// update to db
+	let User = db.model('User', userSchema)
+	for (let update of updates) {
+		await User.findOneAndUpdate({ userId: update.id }, { $inc: { exp: update.exp } },
+			{ upsert: true, new: true }).exec().catch(err=>{
+			util.debugSend('DB-error', `(addHistoryExp) Update Users error: ${err}`, msg.channel)
+		})
+	}
+	util.debugSend('info', `Updating to Database succeeded.`, msg.channel)
 }
 
 function initReset(msg, bot, db) {
-	let role = bot.guilds.resolve(config.guildId).roles.fetch(config.fanRole)
 	let User = db.model('User', userSchema)
 	User.collection.drop((err,res)=>{
 		if (err) msg.channel.send(`Drop Users error: ${err}`)
-		else msg.channel.send(`Exp reset.`)
+		else msg.channel.send(`Exp has reset.`)
+	})
+}
+
+function resetRatio(msg, bot, db) {
+	let Channels = db.model('Channel', channelSchema)
+	Channels.collection.drop((err,res)=>{
+		if (err) msg.channel.send(`Drop Channels error: ${err}`)
+		else msg.channel.send(`Exp ratio has reset.`)
 	})
 }
 
@@ -218,7 +242,7 @@ function showExp(msg, bot, db) {
 			doc = doc || {exp: 0, rank: docs.length + 1}
 			let str = `${target}\n`
 			str += `[ **LV ${level(doc.exp)}** ]     `
-			str += `**RANK ${doc.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}${doc.rank}**     `
+			str += `**RANK ${doc.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}#${doc.rank}**     `
 			str += `EXP \`${`${doc.exp}`.padStart(8, ' ')}\`\n`
 			let  curLevelExp = levelExp(level(doc.exp)  )
 			let nextLevelExp = levelExp(level(doc.exp)+1)
@@ -256,7 +280,7 @@ function showTop(msg, bot, db) {
 				for (e of sliced) {
 					let member = await guild.members.fetch(e.userId).catch(()=>{})
 					let substr = `${e.rank <= 3 ? `:small_orange_diamond:` : `:white_small_square:`}`
-					substr += `**${e.rank}**   `
+					substr += `**#${e.rank}**   `
 					substr += `[ **LV ${level(e.exp)}** ]  `
 					if (member)
 						substr += `${member.nickname ? member.nickname : member.user.username}`
@@ -306,6 +330,11 @@ module.exports = function(bot, db) {
 			if (cmd[1] === 'reset')
 				if (util.checkAdmin(msg) && util.checkChannel(msg))
 					initReset(msg, bot, db)
+
+			// reset exp
+			if (cmd[1] === 'resetRatio')
+				if (util.checkAdmin(msg) && util.checkChannel(msg))
+					resetRatio(msg, bot, db)
 
 			// add exp manual
 			if (cmd[1] === 'add')

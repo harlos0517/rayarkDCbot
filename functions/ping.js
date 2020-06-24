@@ -32,7 +32,7 @@ const ans2 = [{
 	ZH: '普～吉～',
 	EN: 'Pu~ggi~',
 	JP: 'プーギー',
-	audio: 'https://sdorica.xyz/images/6/6f/%E8%AA%9E%E9%9F%B3_%E6%99%AE%E5%90%89_%E9%81%B8%E6%93%87%E8%A7%92%E8%89%B21.mp3'
+	audio: 'https://sdorica.xyz/images/9/97/%E8%AA%9E%E9%9F%B3_%E6%99%AE%E5%90%89_%E9%81%B8%E6%93%87%E8%A7%92%E8%89%B22.mp3'
 },{
 	ZH: '嘿嘿～！',
 	EN: 'Hehe~!',
@@ -47,7 +47,7 @@ const ans2 = [{
 	ZH: '隨便啦～',
 	EN: 'whatever~',
 	JP: 'なんでもいっかー',
-	audio: 'https://sdorica.xyz/images/c/c6/%E8%AA%9E%E9%9F%B3_%E6%99%AE%E5%90%89_%E4%B8%80%E9%AD%82%E6%8A%80%E8%83%BD%EF%BC%88%E4%BA%8C%E9%9A%8E%EF%BC%89.mp3'
+	audio: 'https://sdorica.xyz/images/6/63/%E8%AA%9E%E9%9F%B3_%E6%99%AE%E5%90%89_%E4%BA%8C%E9%AD%82%E6%8A%80%E8%83%BD%EF%BC%88%E4%BA%8C%E9%9A%8E%EF%BC%89.mp3'
 },{
 	ZH: '普吉普吉普吉普吉！',
 	EN: 'PuggiPuggiPuggiPuggi!',
@@ -118,7 +118,7 @@ function ping(msg, bot) {
 	if (rcv.test(msg.content.toLowerCase()) ||
 	    msg.mentions.members.has(bot.user.id)) {
 		let tar = util.random(ans2)
-		tar = util.random([ans1, ans1, ans1, tar])
+		tar = util.random([ans1, ans1, ans1, ans1, ans1, ans1, ans1, ans1, ans1, tar])
 		audio = tar.audio ? new Attachment(tar.audio, 'PUGGI.MP3') : undefined
 		msg.channel.send(util.getLangStr(msg, tar), audio)
 			.catch(err=>util.catch(`(ping) ` + err, msg.channel))

@@ -10,13 +10,15 @@ const config = require('./config.js')
 const bot = new Discord.Client()
 
 process.on('unhandledRejection', err=>{
-	if (err.name === 'DiscordAPIError') util.debugSend('error',
-		`${err.name} ${err.method} ${err.path}\n${err.code} - ${err.message}`, bot)
-	else util.debugSend('error', err, bot)
+	let msg = ''
+	if (err.name === 'DiscordAPIError')
+		msg = `${err.name} ${err.method} ${err.path}\n${err.code} - ${err.message}`
+	else msg = err.stack
+	util.debugSend('error', msg, bot)
 })
 
 process.on('uncaughtException', err => {
-  util.debugSend('error', err, bot)
+  util.debugSend('error', err.stack, bot)
 })
 
 process.on('warning', warning=>{

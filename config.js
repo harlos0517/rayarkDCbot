@@ -2,7 +2,7 @@ module.exports = {
 	prefix: process.env.NODE_ENV === 'production' ? '!' : '?',
 	guildId: '658648174784937985',
 	guildName: 'Rayark Village',
-	expRate: 3,
+	expRate: 10,
 	channels: {
 		spam:  '676067274666410034',
 		cmd:   '674911470785658880',
@@ -17,23 +17,23 @@ module.exports = {
 		name: 'Rayark Fan',
 		abbr: 'fan',
 		id: '676069780947599371',
-		exp: 20000,
+		exp: 600,
 		welcome: true
 	},{
 		name: 'Promoters',
 		abbr: 'promoter',
 		id: '684789134832697347',
-		exp: 6000
+		exp: 300
 	},{
 		name: 'Contributors',
 		abbr: 'contributor',
 		id: '696513658833993729',
-		exp: 50000
+		exp: 5000
 	},{
 		name: 'Nitro Booster',
 		abbr: 'nitro',
 		id: '719210109275865111',
-		exp: 50000
+		exp: 5000
 	}],
 	userRoles: [{
 		name: 'Rayark',
