@@ -37,7 +37,7 @@ function levelExp(level) {
 
 function checkLevelup(msg, bot, user, a, b) {
 	if(level(b) > level(a))
-		msg.channel.send(`恭喜 ${user} 升級到 ${level(b)} 等！`)
+		msg.channel.send(`${user} has leveled up to LV ${level(b)} !`)
 }
 
 function addExp(msg, bot, db) {
@@ -70,7 +70,7 @@ function addExpTo(msg, bot, db) {
 				{upsert: true, new: true}, (err,doc)=>{
 				if (err) msg.channel.send(`Update Users error: ${err}`)
 				else {
-					msg.channel.send(`${msg.author} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`)
+					msg.channel.send(`${msg.author} has gained ${incr} exp, and has ${doc.exp} exp now.`)
 					checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
 				}
 			})
@@ -86,14 +86,14 @@ function addExpToId(msg, bot, db) {
 	if (isNaN(incr)) {
 		msg.channel.send(`Invalid arguments. Usage: \`${config.prefix}exp add [EXP] [member]\` where EXP is an integer.`)
 	} else bot.guilds.resolve(config.guildId).members.fetch(id).then(member=>{
-		if (member.user.bot) msg.channel.send(`不能對機器人 (${member}) 增加經驗值。`)
+		if (member.user.bot) msg.channel.send(`Cannot add exp to bot ${member}.`)
 		else {
 			let User = db.model('User', userSchema)
 			User.findOneAndUpdate({userId: member.id}, {$inc: {exp: incr}},
 				{upsert: true, new: true}, (err,doc)=>{
 				if (err) msg.channel.send(`Update Users error: ${err}`)
 				else {
-					msg.channel.send(`${id} 經驗值增加了 ${incr}，目前經驗值為 ${doc.exp} 。`)
+					msg.channel.send(`${id} has gained ${incr} exp, and has ${doc.exp} exp now.`)
 					// checkLevelup(msg, bot, member, doc.exp-incr, doc.exp)
 				}
 			})
@@ -111,7 +111,7 @@ function setChannelExp(msg, bot, db) {
 		Channel.findOneAndUpdate({channelId: ch.id}, {expRatio: r},
 			{upsert: true, new: true}, (err,doc)=>{
 			if (err) msg.channel.send(`Update Channels error: ${err}`)
-			else msg.channel.send(`成功更動 ${ch} 頻道經驗值比率為 ${doc.expRatio}。`)
+			else msg.channel.send(`Successfully changed exp ratio of channel ${ch} to ${doc.expRatio}。`)
 		})
 	})
 }
@@ -121,7 +121,7 @@ function listChannelExp(msg, bot, db) {
 	Channel.find(async (err, docs)=>{
 		if (err) msg.channel.send(`Find Channels error: ${err}`)
 		else {
-			var str = '**[ 各頻道經驗值比率列表 ]**\n'
+			var str = `**[ Channel Exp Ratio List ]**\nDefault : ${config.expRate}\n`
 			for (e of docs) {
 				str += `${await bot.channels.fetch(e.channelId)} : ${e.expRatio}\n`
 			}
@@ -201,7 +201,7 @@ async function initExp(msg, bot, db) {
 			util.debugSend('DB-error', `(addHistoryExp) Update Users error: ${err}`, msg.channel)
 		})
 	}
-	util.debugSend('info', `Updating to Database succeeded.`, msg.channel)
+	util.debugSend('info', `Updating to Database succeeded.\nExp initialization complete!`, msg.channel)
 }
 
 function initReset(msg, bot, db) {
@@ -260,7 +260,7 @@ function showTop(msg, bot, db) {
 	User.find(async (err, docs)=>{
 		if (err) msg.channel.send(`Find Users error: ${err}`)
 		else {
-			var str = `**[ 排行榜 ]** 頁 ${page}/${Math.ceil(docs.length/10)}\n`
+			var str = `**[ Member Rank ]** PAGE ${page}/${Math.ceil(docs.length/10)}\n`
 			let guild = bot.guilds.resolve(config.guildId)
 			let start = (page - 1) * 10 + 0
 			docs.sort((a,b)=>(b.exp - a.exp))
@@ -287,15 +287,15 @@ function showTop(msg, bot, db) {
 					else {
 						try {
 							let user = await bot.users.fetch(e.userId)
-							substr += `${user.username} *(已離開)*`
+							substr += `${user.username} *(Left)*`
 						} catch {
-							substr += '*(帳號已刪除)*'
+							substr += '*(Deleted)*'
 						}
 					}
 					str += substr + '\n'
 				}
 				msg.channel.send(str)
-			} else msg.channel.send(`頁碼超出範圍。總頁數為 ${Math.ceil(docs.length/10)}`)
+			} else msg.channel.send(`Out of range. Total page number is ${Math.ceil(docs.length/10)}`)
 		}
 	})
 }
