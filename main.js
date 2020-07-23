@@ -53,7 +53,7 @@ bot.once('ready', () => {
 bot.on('guildMemberRemove', member=>{
 	channel = bot.guilds.resolve(config.guildId).systemChannelID
 	bot.channels.fetch(channel).then(ch=>{
-		ch.send(`${member} has left ${config.guildName}.`)
+		ch.send(`${member.user.username} (${member.user}) has left ${config.guildName}.`)
 	})
 })
 

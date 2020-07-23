@@ -51,7 +51,7 @@ function welcome(msg, args, bot, db) {
 			'EN': `Congrats! ${member} has become a ${role.name}!`,
 			'ZH': `恭喜 ${member} 成為了 ${role.name}！`
 		}
-		let str = strs[lang.name] || strs['EN']
+		let str = lang ? strs[lang.name] : strs['EN']
 		bot.channels.fetch(lang.channel.general).then(ch=>ch.send(str))
 	})
 }
