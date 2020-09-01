@@ -56,10 +56,7 @@ function fetchPage(fanpage, bot) {
 		let checkElement = function (ele, eleName) {
 			if (!ele.length) {
 				let errMsg = `(checkElement ${fanpage.name}) ${eleName} element not found!`
-				if (DEBUG) util.debugSend(`warn`, errMsg, bot)
-				else bot.channels.fetch(fanpage.channel).then(ch=>{
-					util.debugSend(`warn`, errMsg, ch)
-				})
+				util.debugSend(`warn`, errMsg, bot)
 				return false
 			} else return true
 		}
