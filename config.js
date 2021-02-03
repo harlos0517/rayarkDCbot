@@ -110,52 +110,52 @@ module.exports = {
 	fanpages: [{
 		name: 'Rayark',
 		id: 'rayark.inc',
-		channel: '674897826588786695',
+		channel: '806044176163930131',
 		pinRole: '691530850570993664'
 	},{
 		name: 'Mandora',
 		id: 'rayark.mandora',
-		channel: '674892202643685376',
+		channel: '806044351623856128',
 		pinRole: '691530836364754994'
 	},{
 		name: 'Cytus',
 		id: 'rayark.cytus',
-		channel: '674892097395884042',
+		channel: '806044325016109077',
 		pinRole: '691527455986548768'
 	},{
 		name: 'Deemo',
 		id: 'rayark.deemo',
-		channel: '674892439630249984',
+		channel: '806044339959889930',
 		pinRole: '691530842388037652'
 	},{
 		name: 'Voez',
 		id: 'rayark.voez',
-		channel: '674979924494385152',
+		channel: '806044548957601812',
 		pinRole: '691530846049665074'
 	},{
 		name: 'Sdorica',
 		id: 'rayark.sdorica',
-		channel: '674892179889586207',
+		channel: '806044679505575957',
 		pinRole: '691530847479660545'
 	},{
 		name: 'MO Astray',
 		id: 'MOAstray',
-		channel: '674892417543176192',
+		channel: '806044363959304192',
 		pinRole: '691530848360464414'
 	},{
 		name: 'Implosion',
 		id: 'rayark.implosion',
-		channel: '674892241059446805',
+		channel: '806044730391396379',
 		pinRole: '691530848977158194'
 	},{
 		name: 'Soul of Eden',
 		id: 'rayark.soulofeden',
-		channel: '674892516612505600',
+		channel: '806044396310364201',
 		pinRole: '691530849765818398'
 	},{
 		name: 'Rayark Concept',
 		id: 'RayarkConcept',
-		channel: '691533621483274260',
+		channel: '806044268887932928',
 		pinRole: '691534019631775785'
 	}]
 }
